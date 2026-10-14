@@ -238,10 +238,10 @@
                     <div>
                         <div class="flex items-center space-x-2">
                             <span class="px-2 py-0.5 rounded-md bg-indigo-500/30 text-indigo-200 text-[11px] font-black uppercase font-mono border border-indigo-400/30">PHP Native MVC</span>
-                            <span class="text-xs text-indigo-200 font-semibold">• No External Library (Pure cURL)</span>
+                            <span class="text-xs text-indigo-200 font-semibold">• Model & Controller Pattern</span>
                         </div>
-                        <h4 class="text-sm font-bold text-white mt-1">Implementasi Model & Controller PHP Native</h4>
-                        <p class="text-xs text-slate-300 mt-0.5">Kode siap pakai berbasis OOP PHP (kompatibel PHP 7.4 - 8.3+). Otomatis menangani fallback multi-device, validasi nomor, dan response format JSON.</p>
+                        <h4 class="text-sm font-bold text-white mt-1">Implementasi PHP Native MVC (<code class="font-mono text-emerald-400">class ... extends controller</code>)</h4>
+                        <p class="text-xs text-slate-300 mt-0.5">Disesuaikan persis dengan arsitektur framework Native Anda. Cukup buat <code class="font-bold text-white">whatsapp_model.php</code>, lalu panggil di controller mana pun dengan <code class="font-mono text-indigo-300">$this->model('whatsapp_model')->kirim_pesan(...)</code>.</p>
                     </div>
                     <div class="flex items-center space-x-2 shrink-0">
                         <span class="text-[11px] text-indigo-300 font-mono bg-black/30 px-3 py-1.5 rounded-xl border border-white/10">
@@ -254,19 +254,19 @@
                 <div class="flex items-center space-x-2 bg-slate-100 p-1.5 rounded-2xl overflow-x-auto">
                     <button onclick="switchPhpSubTab('model')" id="php-btn-model" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-slate-900 text-white shadow-xs flex items-center space-x-1.5 whitespace-nowrap">
                         <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7z"></path></svg>
-                        <span>1. Model (WhatsAppGateway.php)</span>
+                        <span>1. Model (app/models/whatsapp_model.php)</span>
                     </button>
                     <button onclick="switchPhpSubTab('controller')" id="php-btn-controller" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 flex items-center space-x-1.5 whitespace-nowrap">
                         <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                        <span>2. Controller (NotificationController.php)</span>
+                        <span>2. Controller (app/controllers/notifikasi.php)</span>
                     </button>
-                    <button onclick="switchPhpSubTab('index')" id="php-btn-index" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 flex items-center space-x-1.5 whitespace-nowrap">
-                        <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        <span>3. Routing (index.php)</span>
+                    <button onclick="switchPhpSubTab('belanja')" id="php-btn-belanja" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 flex items-center space-x-1.5 whitespace-nowrap">
+                        <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        <span>3. Contoh di Modul Anda (app/controllers/belanja.php)</span>
                     </button>
                     <button onclick="switchPhpSubTab('arch')" id="php-btn-arch" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 flex items-center space-x-1.5 whitespace-nowrap">
                         <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        <span>4. Struktur & Panduan</span>
+                        <span>4. Struktur Folder & Panduan</span>
                     </button>
                 </div>
 
@@ -275,144 +275,129 @@
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div class="flex items-center space-x-2">
                             <span class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800 text-[11px] font-black font-mono">FILE MODEL</span>
-                            <code class="text-xs font-bold text-slate-800">models/WhatsAppGateway.php</code>
+                            <code class="text-xs font-bold text-slate-800">app/models/whatsapp_model.php</code>
                         </div>
                         <button onclick="copySnippet('code-php-model')" class="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
                             <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                            Copy Model Code
+                            Copy whatsapp_model.php
                         </button>
                     </div>
 
                     <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
                         <pre id="code-php-model" class="leading-relaxed">&lt;?php
 /**
- * WhatsApp Gateway Model
- * Menangani koneksi HTTP cURL Native ke server WhatsApp Gateway.
- * Kompatibel dengan PHP 7.4 - 8.3+ (Tanpa dependensi Composer / Guzzle).
+ * File: app/models/whatsapp_model.php
+ * Model WhatsApp Gateway untuk arsitektur MVC Native Anda
+ * Dipanggil di controller dengan: $this->model('whatsapp_model')->kirim_pesan($nomor, $pesan)
  */
-class WhatsAppGateway
-{
-    private string $baseUrl;
-    private string $apiKey;
+class whatsapp_model {
+
+    private $baseUrl = '<%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'https://wa.septito.my.id' %>';
+    private $apiKey  = '<%= keys.length > 0 ? keys[0].key : 'YOUR_API_KEY_HERE' %>';
 
     /**
-     * Inisialisasi Gateway dengan Base URL dan API Key
-     */
-    public function __construct(
-        string $baseUrl = '<%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'https://wa.septito.my.id' %>',
-        string $apiKey = '<%= keys.length > 0 ? keys[0].key : 'YOUR_API_KEY_HERE' %>'
-    ) {
-        $this->baseUrl = rtrim($baseUrl, '/');
-        $this->apiKey = $apiKey;
-    }
-
-    /**
-     * Kirim pesan teks WhatsApp
-     * Gateway otomatis melakukan fallback ke nomor WhatsApp cadangan jika nomor utama sibuk/offline.
+     * 1. Kirim Pesan Teks WhatsApp
+     * Otomatis fallback ke nomor WhatsApp cadangan jika nomor utama sibuk/offline.
+     * Format nomor bebas: 08xx, 628xx, atau +628xx
      *
-     * @param string $number  Nomor tujuan (format bebas: 08xx, 628xx, +628xx)
-     * @param string $message Isi pesan WhatsApp
+     * @param string $nomor Nomor tujuan
+     * @param string $pesan Isi pesan WhatsApp
      * @return array Respon terurai dari server gateway
      */
-    public function sendMessage(string $number, string $message): array
-    {
-        return $this->request('POST', '/api/v1/send', [
+    public function kirim_pesan($nomor, $pesan){
+        $payload = [
             'key'     => $this->apiKey,
-            'number'  => $number,
-            'message' => $message
-        ]);
+            'number'  => $nomor,
+            'message' => $pesan
+        ];
+        return $this->request_api('/api/v1/send', $payload);
     }
 
     /**
-     * Cek apakah nomor tujuan terdaftar dan aktif di WhatsApp
-     * Sangat disarankan untuk memvalidasi nomor sebelum mengirim pesan promosi/OTP.
+     * 2. Cek apakah nomor terdaftar di WhatsApp
+     * Disarankan mengecek nomor pelanggan/vendor sebelum pengiriman
      *
-     * @param string $number Nomor tujuan
+     * @param string $nomor Nomor telepon
      * @return array [status => bool, exists => bool, jid => string]
      */
-    public function checkNumber(string $number): array
-    {
-        return $this->request('POST', '/api/v1/check-number', [
+    public function cek_nomor($nomor){
+        $payload = [
             'key'    => $this->apiKey,
-            'number' => $number
-        ]);
+            'number' => $nomor
+        ];
+        return $this->request_api('/api/v1/check-number', $payload);
     }
 
     /**
-     * Ambil daftar seluruh nomor / device WhatsApp yang terhubung di gateway
-     *
-     * @return array
+     * 3. Ambil daftar semua device WhatsApp yang terhubung di server
      */
-    public function getDevices(): array
-    {
-        return $this->request('GET', '/api/v1/devices');
+    public function get_devices(){
+        return $this->request_api('/api/v1/devices', null, 'GET');
     }
 
     /**
-     * Helper cURL Request Native
+     * Helper cURL Request Native (Tanpa Composer / Library Luar)
      */
-    private function request(string $method, string $endpoint, ?array $body = null): array
-    {
+    private function request_api($endpoint, $data = null, $method = 'POST'){
         $url = $this->baseUrl . $endpoint;
-        $ch = curl_init();
+        $ch  = curl_init();
 
         $headers = [
             'Accept: application/json',
             'X-API-Key: ' . $this->apiKey
         ];
 
-        $curlOptions = [
+        $options = [
             CURLOPT_URL            => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT        => 30,
-            CURLOPT_SSL_VERIFYPEER => true
+            CURLOPT_SSL_VERIFYPEER => false, // Aman untuk localhost maupun server produksi
+            CURLOPT_SSL_VERIFYHOST => false
         ];
 
         if (strtoupper($method) === 'POST') {
-            $curlOptions[CURLOPT_POST] = true;
-            if ($body !== null) {
-                $jsonData = json_encode($body);
-                $curlOptions[CURLOPT_POSTFIELDS] = $jsonData;
-                $headers[] = 'Content-Type: application/json';
-                $headers[] = 'Content-Length: ' . strlen($jsonData);
-            }
+            $options[CURLOPT_POST] = true;
+            $jsonData = json_encode($data ?? []);
+            $options[CURLOPT_POSTFIELDS] = $jsonData;
+            $headers[] = 'Content-Type: application/json';
+            $headers[] = 'Content-Length: ' . strlen($jsonData);
         }
 
-        $curlOptions[CURLOPT_HTTPHEADER] = $headers;
-        curl_setopt_array($ch, $curlOptions);
+        $options[CURLOPT_HTTPHEADER] = $headers;
+        curl_setopt_array($ch, $options);
 
-        $rawResponse = curl_exec($ch);
+        $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
+        $err      = curl_error($ch);
         curl_close($ch);
 
-        if ($curlError) {
+        if ($err) {
             return [
                 'status'   => false,
                 'httpCode' => 500,
-                'message'  => 'cURL Connection Error: ' . $curlError
+                'message'  => 'cURL Connection Error: ' . $err
             ];
         }
 
-        $response = json_decode($rawResponse, true);
-        if (!is_array($response)) {
+        $result = json_decode($response, true);
+        if (!is_array($result)) {
             return [
                 'status'   => false,
                 'httpCode' => $httpCode,
-                'message'  => 'Invalid JSON response dari server gateway',
-                'raw'      => $rawResponse
+                'message'  => 'Invalid response dari server gateway',
+                'raw'      => $response
             ];
         }
 
-        $response['httpCode'] = $httpCode;
-        return $response;
+        $result['httpCode'] = $httpCode;
+        return $result;
     }
 }</pre>
                     </div>
 
                     <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
-                        <span class="font-bold text-slate-800">Penjelasan Model:</span>
-                        <p class="mt-1 text-slate-500">Model ini mengenkapsulasi seluruh komunikasi HTTP ke WA Gateway. Sudah terpasang otomatis Base URL (<code class="font-bold text-indigo-600"><%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'https://wa.septito.my.id' %></code>) dan API Key Anda, sehingga tinggal di-require tanpa ubah konfigurasi manual.</p>
+                        <span class="font-bold text-slate-800">Cara Penggunaan Model:</span>
+                        <p class="mt-1 text-slate-500">Cukup simpan file di atas di <code class="font-bold text-indigo-600">app/models/whatsapp_model.php</code>. Base URL (<code class="font-bold text-indigo-600"><%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'https://wa.septito.my.id' %></code>) dan API Key Anda sudah otomatis terisi dan siap digunakan.</p>
                     </div>
                 </div>
 
@@ -421,197 +406,192 @@ class WhatsAppGateway
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div class="flex items-center space-x-2">
                             <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-[11px] font-black font-mono">FILE CONTROLLER</span>
-                            <code class="text-xs font-bold text-slate-800">controllers/NotificationController.php</code>
+                            <code class="text-xs font-bold text-slate-800">app/controllers/notifikasi.php</code>
                         </div>
                         <button onclick="copySnippet('code-php-controller')" class="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
                             <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                            Copy Controller Code
+                            Copy notifikasi.php
                         </button>
                     </div>
 
                     <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
                         <pre id="code-php-controller" class="leading-relaxed">&lt;?php
-require_once __DIR__ . '/../models/WhatsAppGateway.php';
-
 /**
- * NotificationController
- * Mengatur alur logika validasi dan pengiriman notifikasi WhatsApp
+ * File: app/controllers/notifikasi.php
+ * Controller khusus untuk endpoint pengiriman WhatsApp (via Form / AJAX)
  */
-class NotificationController
-{
-    private WhatsAppGateway $waGateway;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-    public function __construct()
-    {
-        // Inisialisasi Model WhatsAppGateway
-        $this->waGateway = new WhatsAppGateway();
-    }
+class notifikasi extends controller {
 
-    /**
-     * Contoh Aksi 1: Kirim Konfirmasi Pesanan / Invoice Pelanggan
-     */
-    public function sendInvoiceNotification(): void
-    {
-        header('Content-Type: application/json; charset=utf-8');
+    // 1. Endpoint kirim pesan WhatsApp via POST / AJAX
+    public function kirim(){
+        header('Content-Type: application/json');
 
-        // 1. Ambil input dari JSON payload (AJAX/Fetch) atau $_POST biasa
-        $rawInput = file_get_contents('php://input');
-        $input = json_decode($rawInput, true) ?: $_POST;
+        // Tangkap input dari form POST atau payload JSON
+        $nomor = $_POST['no_hp'] ?? '';
+        $pesan = $_POST['pesan'] ?? '';
 
-        $phone        = trim($input['phone'] ?? '');
-        $customerName = trim($input['customer_name'] ?? 'Pelanggan');
-        $invoiceNo    = trim($input['invoice_no'] ?? 'INV-' . date('YmdHis'));
-        $totalAmount  = trim($input['total_amount'] ?? 'Rp 150.000');
-
-        // 2. Validasi kelengkapan nomor tujuan
-        if (empty($phone)) {
-            http_response_code(400);
+        if (empty($nomor) || empty($pesan)) {
             echo json_encode([
-                'success' => false,
-                'message' => 'Nomor WhatsApp penerima wajib diisi!'
+                'status'  => false,
+                'message' => 'Nomor HP dan pesan WhatsApp wajib diisi!'
             ]);
             return;
         }
 
-        // 3. Validasi real-time: cek apakah nomor terdaftar di WhatsApp
-        $check = $this->waGateway->checkNumber($phone);
-        if (empty($check['exists'])) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Nomor ' . $phone . ' tidak terdaftar di WhatsApp!'
-            ]);
+        // Panggil whatsapp_model via $this->model(...) bawaan MVC Anda
+        $kirim = $this->model('whatsapp_model')->kirim_pesan($nomor, $pesan);
+        echo json_encode($kirim);
+    }
+
+    // 2. Endpoint cek apakah nomor terdaftar di WA
+    public function cek(){
+        header('Content-Type: application/json');
+        $nomor = $_POST['no_hp'] ?? '';
+
+        if (empty($nomor)) {
+            echo json_encode(['status' => false, 'message' => 'Nomor HP wajib diisi!']);
             return;
         }
 
-        // 4. Susun pesan dengan format WhatsApp (*tebal*, _miring_, baris baru \n)
-        $message = "Halo *{$customerName}*,\n\n"
-                 . "Pesanan Anda dengan nomor tagihan *#{$invoiceNo}* telah kami terima.\n"
-                 . "Total Pembayaran: *{$totalAmount}*\n\n"
-                 . "Pesanan Anda akan segera diproses dan dikirimkan.\n"
-                 . "Terima kasih atas kepercayaannya! 🙏";
-
-        // 5. Eksekusi pengiriman via Model (Gateway server otomatis fallback jika ada device offline)
-        $result = $this->waGateway->sendMessage($phone, $message);
-
-        // 6. Kembalikan JSON response ke client
-        if (!empty($result['status']) && $result['status'] === true) {
-            http_response_code(200);
-            echo json_encode([
-                'success'      => true,
-                'message'      => 'Notifikasi WhatsApp berhasil dikirim!',
-                'senderNumber' => $result['senderNumber'] ?? null,
-                'deviceId'     => $result['deviceId'] ?? null,
-                'deviceName'   => $result['deviceName'] ?? null
-            ]);
-        } else {
-            http_response_code($result['httpCode'] ?? 500);
-            echo json_encode([
-                'success' => false,
-                'message' => $result['message'] ?? 'Gagal mengirim pesan WhatsApp.',
-                'error'   => $result
-            ]);
-        }
-    }
-
-    /**
-     * Contoh Aksi 2: Kirim Kode OTP Verifikasi
-     *
-     * @param string $phone
-     * @param string $otpCode
-     * @return array
-     */
-    public function sendOtp(string $phone, string $otpCode): array
-    {
-        $message = "Kode OTP verifikasi akun Anda adalah: *{$otpCode}*.\n\n"
-                 . "Jangan berikan kode ini kepada siapapun demi keamanan akun Anda. Berlaku 5 menit.";
-
-        return $this->waGateway->sendMessage($phone, $message);
+        $cek = $this->model('whatsapp_model')->cek_nomor($nomor);
+        echo json_encode($cek);
     }
 }</pre>
                     </div>
 
                     <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
-                        <span class="font-bold text-slate-800">Fitur & Keunggulan Controller:</span>
-                        <ul class="list-disc list-inside mt-1 space-y-1 text-slate-500">
-                            <li>Mendukung input dari request JSON (via <code class="font-bold text-indigo-600">file_get_contents('php://input')</code>) maupun form standar <code class="font-bold text-indigo-600">$_POST</code>.</li>
-                            <li>Melakukan pengecekan validitas WhatsApp terlebih dahulu sebelum mengirim (<code class="font-bold text-indigo-600">checkNumber</code>) untuk mencegah nomor dibanned atau pesan tersendat.</li>
-                        </ul>
+                        <span class="font-bold text-slate-800">Penjelasan Controller Notifikasi:</span>
+                        <p class="mt-1 text-slate-500">Controller ini meng-extend <code class="font-bold text-indigo-600">controller</code> bawaan sistem Anda. Dapat dipanggil via AJAX dari JavaScript (misal modal form kirim WA cepat) atau submit form biasa.</p>
                     </div>
                 </div>
 
-                <!-- Sub-tab 3: Routing -->
-                <div id="php-sub-index" class="hidden space-y-3">
+                <!-- Sub-tab 3: Contoh di Modul Belanja -->
+                <div id="php-sub-belanja" class="hidden space-y-3">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div class="flex items-center space-x-2">
-                            <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 text-[11px] font-black font-mono">FILE ROUTER / ENTRY</span>
-                            <code class="text-xs font-bold text-slate-800">index.php</code>
+                            <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 text-[11px] font-black font-mono">CONTOH INTEGRASI NYATA</span>
+                            <code class="text-xs font-bold text-slate-800">app/controllers/belanja.php</code>
                         </div>
-                        <button onclick="copySnippet('code-php-index')" class="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
+                        <button onclick="copySnippet('code-php-belanja')" class="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
                             <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                            Copy index.php
+                            Copy belanja.php (Snippet)
                         </button>
                     </div>
 
                     <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
-                        <pre id="code-php-index" class="leading-relaxed">&lt;?php
+                        <pre id="code-php-belanja" class="leading-relaxed">&lt;?php 
 /**
- * Contoh Pemanggilan Sederhana di index.php
+ * File: app/controllers/belanja.php
+ * Contoh integrasi notifikasi WhatsApp otomatis di controller belanja bahan Anda
  */
-require_once __DIR__ . '/controllers/NotificationController.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-$action = $_GET['action'] ?? 'test';
+class belanja extends controller {
 
-if ($action === 'send-invoice') {
-    $controller = new NotificationController();
-    $controller->sendInvoiceNotification();
-} else {
-    // Info status endpoint
-    header('Content-Type: application/json');
-    echo json_encode([
-        'status' => 'online',
-        'message' => 'WhatsApp Gateway PHP Native Integration Ready!',
-        'test_endpoint' => 'Kirim POST ke: index.php?action=send-invoice',
-        'sample_body' => [
-            'phone' => '081234567890',
-            'customer_name' => 'Budi Santoso',
-            'invoice_no' => 'INV-9921',
-            'total_amount' => 'Rp 250.000'
-        ]
-    ], JSON_PRETTY_PRINT);
+    // 1. Tampilan Utama Modul Belanja Bahan
+    public function data(){
+        $data['summary']   = $this->model('belanja_model')->get_summary();
+        $data['belanja']   = $this->model('belanja_model')->get_belanja();
+        $data['materials'] = $this->model('belanja_model')->get_item_options();
+        $this->view('belanja/index', $data);
+    }
+
+    // 2. Live Search Tabel Belanja
+    public function caribelanja(){
+        $data['belanja'] = $this->model('belanja_model')->get_caribelanja();
+        $this->view('belanja/table_belanja', $data);
+    }
+
+    // 3. CONTOH IMPLEMENTASI WA: Approval PO & Kirim Notifikasi ke Vendor
+    public function approve_po($id_belanja){
+        // A. Update status belanja di database
+        $this->model('belanja_model')->update_status($id_belanja, 'po');
+
+        // B. Ambil detail belanja & nomor WhatsApp vendor
+        $po = $this->model('belanja_model')->get_detail_po($id_belanja);
+        $no_wa_vendor = $po['no_hp_vendor']; // contoh: 081234567890 atau 6281234567890
+        $nama_vendor  = $po['nama_vendor'];
+        $no_po        = $po['no_po'];
+        $total        = number_format($po['total_nominal'], 0, ',', '.');
+
+        // C. Susun Pesan WhatsApp (*tebal*, _miring_, baris baru \n)
+        $pesan = "Halo *{$nama_vendor}*,\n\n"
+               . "Pengajuan Purchase Order *#{$no_po}* telah disetujui (*APPROVED*).\n"
+               . "Total Nilai: *Rp {$total}*\n\n"
+               . "Mohon segera diproses dan dikirimkan ke gudang kami. Terima kasih! 🙏";
+
+        // D. Kirim WhatsApp menggunakan whatsapp_model (dengan Auto-Fallback multi-device!)
+        $kirim_wa = $this->model('whatsapp_model')->kirim_pesan($no_wa_vendor, $pesan);
+
+        // E. Return respon JSON ke modal frontend
+        echo json_encode([
+            'status'  => true,
+            'message' => 'PO berhasil di-ACC dan WhatsApp telah dikirim ke Vendor!',
+            'wa_res'  => $kirim_wa
+        ]);
+    }
+
+    // 4. CONTOH IMPLEMENTASI WA: Notifikasi Barang Masuk ke Owner / Manajer
+    public function terima_barang($id_belanja){
+        $this->model('belanja_model')->update_status($id_belanja, 'barang_masuk');
+
+        $no_owner = '081234567890'; // Nomor WhatsApp Owner / Bagian Purchasing
+        $pesan = "📦 *Barang Masuk!*\n\nBarang dari PO *#{$id_belanja}* telah sampai dan diterima di gudang.";
+        $this->model('whatsapp_model')->kirim_pesan($no_owner, $pesan);
+
+        echo json_encode(['status' => true, 'message' => 'Status barang masuk berhasil disimpan!']);
+    }
 }</pre>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+                        <span class="font-bold text-slate-800">Kelebihan Menggunakan Model di Controller Anda:</span>
+                        <p class="mt-1 text-slate-500">Anda tidak perlu menulis ulang konfigurasi cURL atau API Key di setiap controller. Cukup panggil <code class="font-bold text-indigo-600">$this->model('whatsapp_model')->kirim_pesan($nomor, $pesan)</code> saat ada event penting (approval, barang masuk, order baru, dll).</p>
                     </div>
                 </div>
 
                 <!-- Sub-tab 4: Arsitektur & Panduan -->
                 <div id="php-sub-arch" class="hidden space-y-4">
                     <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                        <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Struktur Folder Aplikasi PHP Anda</h4>
+                        <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Struktur Folder Aplikasi PHP Native Anda</h4>
                         <div class="bg-slate-900 rounded-xl p-4 text-xs font-mono text-emerald-400">
-my-php-project/
-├── models/
-│   └── WhatsAppGateway.php       <-- Model HTTP Client (cURL native)
+app/
+├── config/
+│   └── koneksi.php
 ├── controllers/
-│   └── NotificationController.php <-- Controller logika pengiriman notifikasi
-└── index.php                     <-- Router / Entry point
+│   ├── belanja.php          <-- Controller transaksi Anda (panggil $this->model('whatsapp_model'))
+│   ├── master_data.php      <-- Controller Anda lainnya
+│   └── notifikasi.php       <-- Controller endpoint pengiriman WhatsApp
+├── models/
+│   ├── belanja_model.php    <-- Model transaksi Anda (database mysqli)
+│   └── whatsapp_model.php   <-- Model WhatsApp Gateway (cukup buat file ini!)
+└── views/
+    ├── belanja/
+    └── master_data/
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
                             <span class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs mb-2">01</span>
-                            <h5 class="text-xs font-bold text-slate-900">Auto-Fallback Multi-Device</h5>
-                            <p class="text-xs text-slate-500 mt-1">Jika WhatsApp pengirim utama mati/baterai habis, server gateway otomatis memindahkan pengiriman ke nomor cadangan tanpa coding ulang di PHP.</p>
+                            <h5 class="text-xs font-bold text-slate-900">1 File untuk Semua Modul</h5>
+                            <p class="text-xs text-slate-500 mt-1">Cukup buat <code class="text-indigo-600 font-bold">app/models/whatsapp_model.php</code>, semua controller bisa langsung menggunakannya dengan <code class="font-bold text-slate-800">$this->model('whatsapp_model')</code>.</p>
                         </div>
                         <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
                             <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs mb-2">02</span>
-                            <h5 class="text-xs font-bold text-slate-900">Validasi Nomor Real-time</h5>
-                            <p class="text-xs text-slate-500 mt-1">Method <code class="text-indigo-600 font-bold">checkNumber()</code> memastikan nomor penerima terdaftar di WA sebelum pesan dikirim untuk efisiensi.</p>
+                            <h5 class="text-xs font-bold text-slate-900">Auto-Fallback Server Gateway</h5>
+                            <p class="text-xs text-slate-500 mt-1">Jika HP WhatsApp pengirim utama mati atau offline, server otomatis mengalihkan pesan ke device cadangan tanpa perlu modifikasi script PHP Anda.</p>
                         </div>
                         <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
                             <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs mb-2">03</span>
-                            <h5 class="text-xs font-bold text-slate-900">Format Fleksibel</h5>
-                            <p class="text-xs text-slate-500 mt-1">Nomor tujuan bisa berawalan <code class="font-bold">08...</code>, <code class="font-bold">+62...</code>, maupun <code class="font-bold">628...</code> tanpa perlu konversi manual di PHP.</p>
+                            <h5 class="text-xs font-bold text-slate-900">Format Nomor Bebas</h5>
+                            <p class="text-xs text-slate-500 mt-1">PHP dapat langsung mengirimkan nomor berawalan <code class="font-bold">08...</code>, <code class="font-bold">+62...</code>, maupun <code class="font-bold">628...</code> tanpa perlu konversi manual.</p>
                         </div>
                     </div>
                 </div>
@@ -733,7 +713,7 @@ my-php-project/
     }
 
     function switchPhpSubTab(sub) {
-        const subs = ['model', 'controller', 'index', 'arch'];
+        const subs = ['model', 'controller', 'belanja', 'arch'];
         subs.forEach(s => {
             const pane = document.getElementById('php-sub-' + s);
             const btn = document.getElementById('php-btn-' + s);

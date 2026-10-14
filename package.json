@@ -1,0 +1,36 @@
+{
+  "name": "wa-dashboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"nodemon --ignore sessions/ src/server.js\" \"npx @tailwindcss/cli -i ./public/css/input.css -o ./public/css/output.css --watch\"",
+    "build:css": "npx @tailwindcss/cli -i ./public/css/input.css -o ./public/css/output.css --minify",
+    "start": "node src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^7.0.0-rc14",
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^18.0.5",
+    "ejs": "^7.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "pino": "^10.4.0",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.4",
+    "uuid": "^14.0.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "autoprefixer": "^10.6.1",
+    "concurrently": "^10.0.5",
+    "nodemon": "^3.1.14",
+    "postcss": "^8.5.29",
+    "tailwindcss": "^4.3.3"
+  }
+}

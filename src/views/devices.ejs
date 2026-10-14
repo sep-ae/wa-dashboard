@@ -1,0 +1,440 @@
+<%- include('partials/header') %>
+
+<div class="space-y-8">
+    <!-- Header with Stats -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">WhatsApp Devices</h1>
+            <p class="text-slate-500 mt-1">Manage multiple WhatsApp sessions, connect via QR code, and monitor status.</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button onclick="openAddDeviceModal()" class="inline-flex items-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-200 transition-all hover:scale-[1.02]">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Add New Device
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Devices</p>
+                <h3 id="stat-total" class="text-2xl font-black text-slate-800 mt-1"><%= devices.length %></h3>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Connected</p>
+                <h3 id="stat-connected" class="text-2xl font-black text-emerald-600 mt-1">
+                    <%= devices.filter(d => d.status === 'connected').length %>
+                </h3>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Offline / Needs QR</p>
+                <h3 id="stat-offline" class="text-2xl font-black text-amber-600 mt-1">
+                    <%= devices.filter(d => d.status !== 'connected').length %>
+                </h3>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Device Cards Grid -->
+    <div id="device-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% if (devices.length === 0) { %>
+        <div id="empty-state" class="col-span-full bg-white rounded-3xl p-12 text-center border-2 border-dashed border-slate-200">
+            <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 mx-auto flex items-center justify-center mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800">No WhatsApp Devices Added</h3>
+            <p class="text-slate-500 text-sm mt-1 max-w-sm mx-auto">Click "Add New Device" to create your first session and scan the QR code with WhatsApp.</p>
+            <button onclick="openAddDeviceModal()" class="mt-6 inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-sm">
+                Add Device Now
+            </button>
+        </div>
+        <% } %>
+
+        <% devices.forEach(device => { %>
+        <div id="card-<%= device.id %>" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-md transition-all flex flex-col overflow-hidden">
+            <!-- Card Header -->
+            <div class="p-5 border-b border-slate-100 flex items-start justify-between">
+                <div>
+                    <h3 class="font-extrabold text-slate-900 text-lg flex items-center">
+                        <span id="name-<%= device.id %>"><%= device.name %></span>
+                    </h3>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <span class="text-[11px] font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-semibold">
+                            <%= device.id %>
+                        </span>
+                        <span id="phone-<%= device.id %>" class="text-xs text-slate-600 font-medium">
+                            <%= device.phoneNumber ? '+' + device.phoneNumber : 'No phone linked' %>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Status Badge -->
+                <div id="badge-<%= device.id %>">
+                    <% if (device.status === 'connected') { %>
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+                            Online
+                        </span>
+                    <% } else if (device.status === 'qr') { %>
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mr-1.5"></span>
+                            Scan QR
+                        </span>
+                    <% } else if (device.status === 'connecting') { %>
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                            <svg class="animate-spin -ml-0.5 mr-1.5 h-3 w-3 text-amber-700" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            Connecting
+                        </span>
+                    <% } else { %>
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">
+                            Offline
+                        </span>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Card Body / Interactive View -->
+            <div id="body-<%= device.id %>" class="p-6 flex-1 flex flex-col items-center justify-center min-h-[220px] text-center">
+                <% if (device.status === 'connected') { %>
+                    <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-3 shadow-inner">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-base">WhatsApp Connected</h4>
+                    <p class="text-slate-500 text-xs mt-1 max-w-[220px]">Ready to send messages via dashboard or REST API.</p>
+                    <button onclick="openTestModal('<%= device.id %>', '<%= device.name %>')" class="mt-4 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all flex items-center">
+                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        Test Send Message
+                    </button>
+                <% } else if (device.status === 'qr' && device.qr) { %>
+                    <div class="p-2 bg-white rounded-2xl border-2 border-indigo-100 shadow-xs mb-3">
+                        <img src="<%= device.qr %>" alt="QR Code" class="w-44 h-44 object-contain">
+                    </div>
+                    <p class="text-xs font-semibold text-slate-600 flex items-center">
+                        <svg class="w-3.5 h-3.5 mr-1 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                        Scan using WhatsApp &bull; Linked Devices
+                    </p>
+                <% } else if (device.status === 'connecting') { %>
+                    <div class="animate-spin w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full mb-3"></div>
+                    <h4 class="font-bold text-slate-800 text-sm">Initializing WhatsApp...</h4>
+                    <p class="text-slate-400 text-xs mt-1">Generating session & QR code</p>
+                <% } else { %>
+                    <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.166a1 1 0 111.414 1.414"></path></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-700 text-sm">Session Disconnected</h4>
+                    <button onclick="restartDevice('<%= device.id %>')" class="mt-3 px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-bold transition-all">
+                        Reconnect / Scan QR
+                    </button>
+                <% } %>
+            </div>
+
+            <!-- Card Footer Actions -->
+            <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
+                <button onclick="restartDevice('<%= device.id %>')" class="text-slate-600 hover:text-indigo-600 font-semibold flex items-center transition-colors">
+                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Restart
+                </button>
+                <div class="flex items-center space-x-2">
+                    <% if (device.status === 'connected') { %>
+                    <button onclick="logoutDevice('<%= device.id %>')" class="text-amber-600 hover:text-amber-700 font-semibold transition-colors">
+                        Logout
+                    </button>
+                    <% } %>
+                    <button onclick="deleteDevice('<%= device.id %>')" class="text-red-500 hover:text-red-700 font-semibold transition-colors">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        <% }) %>
+    </div>
+</div>
+
+<!-- Add Device Modal -->
+<div id="add-device-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-slate-900">Add WhatsApp Device</h3>
+            <button onclick="closeAddDeviceModal()" class="text-slate-400 hover:text-slate-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <p class="text-xs text-slate-500 mb-5">Give your device a friendly name to identify it easily.</p>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Device Name</label>
+                <input type="text" id="new-device-name" placeholder="e.g. CS WhatsApp 2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Device ID (Optional)</label>
+                <input type="text" id="new-device-id" placeholder="leave blank to auto-generate" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-mono">
+            </div>
+        </div>
+        <div class="mt-6 flex justify-end space-x-3">
+            <button onclick="closeAddDeviceModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50">Cancel</button>
+            <button onclick="createDevice()" class="px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 shadow-md shadow-indigo-200">Create & Connect</button>
+        </div>
+    </div>
+</div>
+
+<!-- Test Message Modal -->
+<div id="test-message-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-slate-900">Direct Test Message</h3>
+            <button onclick="closeTestModal()" class="text-slate-400 hover:text-slate-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <input type="hidden" id="test-device-id">
+        <p class="text-xs text-slate-500 mb-4">Sending from: <span id="test-device-name" class="font-bold text-indigo-600"></span></p>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Recipient Phone Number</label>
+                <input type="text" id="test-recipient" placeholder="0812... atau 628..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-mono">
+                <span class="text-[11px] text-slate-400 mt-1 block">Bebas format: otomatis diubah (08..., +62..., 628...).</span>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Message</label>
+                <textarea id="test-message-text" rows="3" placeholder="Hello from WA Gateway!" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none"></textarea>
+            </div>
+        </div>
+        <div id="test-result-alert" class="mt-3 hidden p-3 rounded-xl text-xs font-semibold"></div>
+        <div class="mt-6 flex justify-end space-x-3">
+            <button onclick="closeTestModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50">Close</button>
+            <button onclick="sendTestMessage()" id="btn-submit-test" class="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 shadow-md">Send Now</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const socket = io();
+
+    socket.on('device_status', (data) => {
+        console.log('[Socket] Device status update:', data);
+        updateCardUI(data);
+    });
+
+    socket.on('device_deleted', (data) => {
+        const el = document.getElementById('card-' + data.deviceId);
+        if (el) el.remove();
+    });
+
+    function updateCardUI(data) {
+        let card = document.getElementById('card-' + data.deviceId);
+        if (!card) {
+            window.location.reload();
+            return;
+        }
+
+        const phoneEl = document.getElementById('phone-' + data.deviceId);
+        if (phoneEl && data.phoneNumber) {
+            phoneEl.innerText = '+' + data.phoneNumber;
+        }
+
+        const badgeEl = document.getElementById('badge-' + data.deviceId);
+        const bodyEl = document.getElementById('body-' + data.deviceId);
+
+        if (data.status === 'connected') {
+            badgeEl.innerHTML = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>Online</span>';
+            bodyEl.innerHTML = `
+                <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-3 shadow-inner">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h4 class="font-bold text-slate-800 text-base">WhatsApp Connected</h4>
+                <p class="text-slate-500 text-xs mt-1 max-w-[220px]">Ready to send messages via dashboard or REST API.</p>
+                <button onclick="openTestModal('${data.deviceId}', '${data.name}')" class="mt-4 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all flex items-center">
+                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    Test Send Message
+                </button>
+            `;
+        } else if (data.status === 'qr' && data.qr) {
+            badgeEl.innerHTML = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800"><span class="w-1.5 h-1.5 rounded-full bg-purple-500 mr-1.5"></span>Scan QR</span>';
+            bodyEl.innerHTML = `
+                <div class="p-2 bg-white rounded-2xl border-2 border-indigo-100 shadow-xs mb-3">
+                    <img src="${data.qr}" alt="QR Code" class="w-44 h-44 object-contain">
+                </div>
+                <p class="text-xs font-semibold text-slate-600 flex items-center">
+                    <svg class="w-3.5 h-3.5 mr-1 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                    Scan using WhatsApp &bull; Linked Devices
+                </p>
+            `;
+        } else if (data.status === 'connecting') {
+            badgeEl.innerHTML = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Connecting</span>';
+            bodyEl.innerHTML = `
+                <div class="animate-spin w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full mb-3"></div>
+                <h4 class="font-bold text-slate-800 text-sm">Initializing WhatsApp...</h4>
+                <p class="text-slate-400 text-xs mt-1">Generating session & QR code</p>
+            `;
+        } else {
+            badgeEl.innerHTML = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">Offline</span>';
+            bodyEl.innerHTML = `
+                <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.166a1 1 0 111.414 1.414"></path></svg>
+                </div>
+                <h4 class="font-bold text-slate-700 text-sm">Session Disconnected</h4>
+                <button onclick="restartDevice('${data.deviceId}')" class="mt-3 px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-bold transition-all">
+                    Reconnect / Scan QR
+                </button>
+            `;
+        }
+    }
+
+    function openAddDeviceModal() {
+        const modal = document.getElementById('add-device-modal');
+        modal.classList.remove('hidden');
+        document.getElementById('new-device-name').focus();
+    }
+    function closeAddDeviceModal() {
+        document.getElementById('add-device-modal').classList.add('hidden');
+    }
+
+    async function createDevice() {
+        const name = document.getElementById('new-device-name').value.trim();
+        const id = document.getElementById('new-device-id').value.trim();
+        if (!name) return showToast('Please enter a device name', 'error');
+
+        try {
+            const res = await fetch('/api/devices/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, deviceId: id })
+            });
+            const data = await res.json();
+            if (data.status) {
+                showToast('Device created! Initializing session...', 'success');
+                setTimeout(() => window.location.reload(), 800);
+            } else {
+                showAlert('Creation Failed', data.message || 'Failed to create device');
+            }
+        } catch(err) {
+            showAlert('Error', err.toString());
+        }
+    }
+
+    async function restartDevice(deviceId) {
+        showToast('Restarting device session...', 'info');
+        try {
+            const res = await fetch('/api/devices/' + deviceId + '/restart', { method: 'POST' });
+            const data = await res.json();
+            if (data.status) {
+                showToast('Session restart initiated', 'success');
+            } else {
+                showAlert('Restart Failed', data.message || 'Failed to restart device');
+            }
+        } catch(e) {
+            showAlert('Error', e.toString());
+        }
+    }
+
+    async function logoutDevice(deviceId) {
+        const ok = await showConfirm(
+            'Logout WhatsApp Session?',
+            'This will disconnect the active WhatsApp account from the gateway.',
+            'Yes, Logout',
+            true
+        );
+        if (!ok) return;
+
+        try {
+            const res = await fetch('/api/devices/' + deviceId + '/logout', { method: 'POST' });
+            const data = await res.json();
+            if (data.status) {
+                showToast('Device logged out successfully', 'success');
+                setTimeout(() => window.location.reload(), 800);
+            } else {
+                showAlert('Logout Failed', data.message || 'Failed to logout device');
+            }
+        } catch(e) {
+            showAlert('Error', e.toString());
+        }
+    }
+
+    async function deleteDevice(deviceId) {
+        const ok = await showConfirm(
+            'Delete WhatsApp Device?',
+            'This device and all its saved session files will be permanently deleted.',
+            'Yes, Delete Permanently',
+            true
+        );
+        if (!ok) return;
+
+        try {
+            const res = await fetch('/api/devices/' + deviceId, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.status) {
+                showToast('Device removed successfully', 'success');
+                setTimeout(() => window.location.reload(), 800);
+            } else {
+                showAlert('Delete Failed', data.message || 'Failed to delete device');
+            }
+        } catch(e) {
+            showAlert('Error', e.toString());
+        }
+    }
+
+    function openTestModal(deviceId, deviceName) {
+        document.getElementById('test-device-id').value = deviceId;
+        document.getElementById('test-device-name').innerText = deviceName + ' (' + deviceId + ')';
+        document.getElementById('test-result-alert').classList.add('hidden');
+        document.getElementById('test-message-modal').classList.remove('hidden');
+        document.getElementById('test-recipient').focus();
+    }
+
+    function closeTestModal() {
+        document.getElementById('test-message-modal').classList.add('hidden');
+    }
+
+    async function sendTestMessage() {
+        const deviceId = document.getElementById('test-device-id').value;
+        const number = document.getElementById('test-recipient').value.trim();
+        const message = document.getElementById('test-message-text').value.trim();
+        const btn = document.getElementById('btn-submit-test');
+
+        if (!number || !message) {
+            return showToast('Please enter both number and message', 'error');
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Sending...';
+
+        try {
+            const res = await fetch('/api/v1/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ deviceId, number, message })
+            });
+            const data = await res.json();
+
+            if (data.status) {
+                closeTestModal();
+                showToast('Message sent to +' + data.data.recipient, 'success');
+            } else {
+                showAlert('Message Not Sent', data.message || 'Failed to send WhatsApp message');
+            }
+        } catch(err) {
+            showAlert('Network Error', err.toString());
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Send Now';
+        }
+    }
+</script>
+
+<%- include('partials/footer') %>

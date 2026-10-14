@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title : 'WA Gateway Dashboard' %></title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="/css/output.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            scroll-behavior: smooth;
+        }
+        code, pre, .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Smooth UI Animations */
+        .animate-fade-in {
+            animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.97) translateY(6px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+
+    <script>
+        // Sonner-style Toast Notification System (Inspired by shadcn-vue / shadcn-ui)
+        const toast = {
+            show: (title, options = {}) => {
+                const container = document.getElementById('sonner-container');
+                if (!container) return;
+
+                const type = options.type || 'default';
+                const description = options.description || '';
+                const duration = options.duration || 3500;
+
+                const toastEl = document.createElement('div');
+                toastEl.className = 'pointer-events-auto flex items-start gap-3 p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-[0_10px_35px_-5px_rgba(0,0,0,0.1)] transform translate-y-3 opacity-0 transition-all duration-300 ease-out select-none';
+
+                // Modern icons
+                let iconHtml = '';
+                if (type === 'success') {
+                    iconHtml = `<div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5 border border-emerald-200/60"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg></div>`;
+                } else if (type === 'error') {
+                    iconHtml = `<div class="w-5 h-5 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0 mt-0.5 border border-rose-200/60"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></div>`;
+                } else if (type === 'info') {
+                    iconHtml = `<div class="w-5 h-5 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0 mt-0.5 border border-indigo-200/60"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>`;
+                } else {
+                    iconHtml = `<div class="w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>`;
+                }
+
+                toastEl.innerHTML = `
+                    ${iconHtml}
+                    <div class="flex-1 min-w-0 pr-1">
+                        <p class="text-xs font-bold text-slate-900">${title}</p>
+                        ${description ? `<p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">${description}</p>` : ''}
+                    </div>
+                    <button onclick="this.closest('div.pointer-events-auto').remove()" class="text-slate-400 hover:text-slate-600 p-0.5 rounded-md hover:bg-slate-100 transition-colors flex-shrink-0">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+
+                container.appendChild(toastEl);
+
+                // Spring animate in
+                requestAnimationFrame(() => {
+                    toastEl.classList.remove('translate-y-3', 'opacity-0');
+                    toastEl.classList.add('translate-y-0', 'opacity-100');
+                });
+
+                // Auto dismiss with fade out
+                setTimeout(() => {
+                    toastEl.classList.remove('translate-y-0', 'opacity-100');
+                    toastEl.classList.add('translate-y-2', 'opacity-0');
+                    setTimeout(() => toastEl.remove(), 250);
+                }, duration);
+            },
+            success: (title, description) => toast.show(title, { type: 'success', description }),
+            error: (title, description) => toast.show(title, { type: 'error', description }),
+            info: (title, description) => toast.show(title, { type: 'info', description })
+        };
+
+        window.toast = toast;
+        window.showToast = (msg, type = 'success', desc = '') => {
+            toast.show(msg, { type: type === 'info' ? 'info' : (type === 'error' ? 'error' : 'success'), description: desc });
+        };
+
+        // Shadcn-style AlertDialog (Confirmation Dialog)
+        window.showConfirm = (title, text, confirmButtonText = 'Yes, Proceed', isDanger = false) => {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('shadcn-confirm-modal');
+                const titleEl = document.getElementById('shadcn-confirm-title');
+                const descEl = document.getElementById('shadcn-confirm-desc');
+                const cancelBtn = document.getElementById('shadcn-confirm-cancel');
+                const confirmBtn = document.getElementById('shadcn-confirm-btn');
+
+                titleEl.innerText = title;
+                descEl.innerText = text;
+                confirmBtn.innerText = confirmButtonText;
+
+                if (isDanger) {
+                    confirmBtn.className = 'px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold active:scale-95 transition-all shadow-md shadow-rose-200';
+                } else {
+                    confirmBtn.className = 'px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold active:scale-95 transition-all shadow-md shadow-indigo-200';
+                }
+
+                modal.classList.remove('hidden');
+
+                const onCancel = () => {
+                    modal.classList.add('hidden');
+                    cleanup();
+                    resolve(false);
+                };
+                const onConfirm = () => {
+                    modal.classList.add('hidden');
+                    cleanup();
+                    resolve(true);
+                };
+                const cleanup = () => {
+                    cancelBtn.removeEventListener('click', onCancel);
+                    confirmBtn.removeEventListener('click', onConfirm);
+                };
+
+                cancelBtn.addEventListener('click', onCancel, { once: true });
+                confirmBtn.addEventListener('click', onConfirm, { once: true });
+            });
+        };
+
+        // Global Alert Helper (Replacing Swal.fire for error alerts)
+        window.showAlert = (title, text) => {
+            return window.showConfirm(title, text, 'Understood', false);
+        };
+    </script>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 antialiased flex flex-col selection:bg-indigo-500 selection:text-white">
+    <!-- Sonner Toaster Container (shadcn-style) -->
+    <div id="sonner-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2.5 pointer-events-none max-w-sm w-full"></div>
+
+    <!-- Shadcn-style AlertDialog (Confirmation Dialog) -->
+    <div id="shadcn-confirm-modal" class="hidden fixed inset-0 z-[110] bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 transition-all duration-200">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200/90 transform transition-all duration-200 scale-95 animate-fade-in space-y-4">
+            <div>
+                <h3 id="shadcn-confirm-title" class="text-lg font-bold text-slate-900"></h3>
+                <p id="shadcn-confirm-desc" class="text-xs text-slate-500 mt-1 leading-relaxed"></p>
+            </div>
+            <div class="flex justify-end space-x-2.5 pt-2">
+                <button id="shadcn-confirm-cancel" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 active:scale-95 transition-all">Cancel</button>
+                <button id="shadcn-confirm-btn" class="px-4 py-2.5 rounded-xl text-white text-xs font-bold active:scale-95 transition-all shadow-sm"></button>
+            </div>
+        </div>
+    </div>
+
+    <% if (typeof user !== 'undefined' && user) { %>
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand -->
+                <div class="flex items-center space-x-8">
+                    <a href="/devices" class="flex items-center space-x-3 group">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-indigo-200 group-hover:scale-105 transition-all duration-300">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="text-lg font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">WA GATEWAY</span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-sm bg-emerald-100 text-emerald-700 ml-1.5">Multi-Device</span>
+                        </div>
+                    </a>
+
+                    <!-- Navigation Links -->
+                    <nav class="hidden md:flex items-center space-x-1.5">
+                        <a href="/devices" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 <%= (typeof activePage !== 'undefined' && activePage === 'devices') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 active:scale-95' %>">
+                            <span class="flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                <span>Devices</span>
+                            </span>
+                        </a>
+                        <a href="/logs" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 <%= (typeof activePage !== 'undefined' && activePage === 'logs') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 active:scale-95' %>">
+                            <span class="flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                <span>Message Logs</span>
+                            </span>
+                        </a>
+                        <a href="/api-keys" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 <%= (typeof activePage !== 'undefined' && activePage === 'api-keys') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 active:scale-95' %>">
+                            <span class="flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                                <span>API Keys</span>
+                            </span>
+                        </a>
+                        <% if (user.role === 'admin') { %>
+                        <a href="/users" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 <%= (typeof activePage !== 'undefined' && activePage === 'users') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 active:scale-95' %>">
+                            <span class="flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                <span>Users</span>
+                            </span>
+                        </a>
+                        <% } %>
+                    </nav>
+                </div>
+
+                <!-- Right Action / User -->
+                <div class="flex items-center space-x-3">
+                    <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span><%= user.username %></span>
+                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-slate-200 text-slate-600 font-bold uppercase"><%= user.role || 'admin' %></span>
+                    </div>
+                    <a href="/logout" class="px-3.5 py-2 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50 hover:text-rose-700 border border-transparent hover:border-rose-100 transition-all duration-200 active:scale-95 flex items-center space-x-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <% } %>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

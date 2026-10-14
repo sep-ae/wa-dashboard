@@ -1,0 +1,326 @@
+<%- include('partials/header') %>
+
+<div class="space-y-6 animate-fade-in">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Message & Activity Logs</h1>
+            <p class="text-slate-500 mt-1">Audit log of all outgoing API requests (recipient, IP, status, timestamp, and payload).</p>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button onclick="window.location.reload()" class="inline-flex items-center px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-50 active:scale-95 shadow-xs transition-all duration-200">
+                <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Refresh Data
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all duration-200">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Requests</p>
+            <h3 class="text-2xl font-black text-slate-800 mt-1"><%= stats.total %></h3>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all duration-200">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Success Rate</p>
+            <h3 class="text-2xl font-black text-emerald-600 mt-1">
+                <%= stats.total > 0 ? Math.round((stats.success / stats.total) * 100) : 100 %>%
+            </h3>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all duration-200">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Delivered</p>
+            <h3 class="text-2xl font-black text-emerald-600 mt-1"><%= stats.success %></h3>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all duration-200">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Failed Requests</p>
+            <h3 class="text-2xl font-black text-rose-600 mt-1"><%= stats.failed %></h3>
+        </div>
+    </div>
+
+    <!-- Full-Width Log Table -->
+    <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <!-- Search & Filter Controls -->
+        <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50/50">
+            <div class="w-full sm:w-80 relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input type="text" id="filter-search" oninput="applyFilter()" placeholder="Search recipient, IP, or message..."
+                    class="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-2xs font-medium">
+            </div>
+            
+            <div class="flex items-center space-x-3 w-full sm:w-auto">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Status:</span>
+                    <select id="filter-status" onchange="applyFilter()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 shadow-2xs">
+                        <option value="ALL">All Status</option>
+                        <option value="SUCCESS">SUCCESS Only</option>
+                        <option value="FAILED">FAILED Only</option>
+                    </select>
+                </div>
+                <span id="showing-count" class="text-xs text-slate-500 font-semibold px-2 py-1 rounded-lg bg-slate-100">
+                    Showing <%= logs.length %> logs
+                </span>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="logs-table">
+                <thead>
+                    <tr class="bg-slate-50/90 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        <th class="py-3.5 px-6">ID & Time</th>
+                        <th class="py-3.5 px-6">Recipient</th>
+                        <th class="py-3.5 px-6">Status</th>
+                        <th class="py-3.5 px-6">Sent Via (WA / Device)</th>
+                        <th class="py-3.5 px-6">Client IP</th>
+                        <th class="py-3.5 px-6">Message Content</th>
+                        <th class="py-3.5 px-6 text-right">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-700" id="logs-body">
+                    <% if (logs.length === 0) { %>
+                    <tr>
+                        <td colspan="7" class="py-16 text-center text-slate-400">
+                            <div class="max-w-xs mx-auto text-center space-y-2">
+                                <svg class="w-10 h-10 mx-auto text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <p class="font-bold text-slate-700">No request logs recorded yet</p>
+                                <p class="text-[11px] text-slate-400">Send your first WhatsApp message via the Devices page or REST API.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <% } %>
+
+                    <% logs.forEach(log => { %>
+                    <tr class="hover:bg-indigo-50/30 transition-colors log-row group" 
+                        data-id="<%= log.id %>"
+                        data-status="<%= log.status %>" 
+                        data-recipient="<%= log.recipient %>" 
+                        data-ip="<%= log.ip_address %>"
+                        data-device="<%= log.device_id || 'auto' %>"
+                        data-devicename="<%= log.device_name || '' %>"
+                        data-sender="<%= log.sender_number || '' %>"
+                        data-time="<%= new Date(log.created_at).toLocaleString() %>"
+                        data-error="<%= (log.error_message || '').replace(/"/g, '&quot;') %>"
+                        data-msg="<%= (log.message || '').replace(/"/g, '&quot;') %>">
+                        
+                        <!-- ID & Time -->
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <div class="font-mono text-slate-800 font-bold">#<%= log.id %></div>
+                            <div class="text-[11px] text-slate-400 font-medium mt-0.5"><%= new Date(log.created_at).toLocaleString() %></div>
+                        </td>
+
+                        <!-- Recipient with copy -->
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <div class="flex items-center space-x-1.5">
+                                <span class="font-mono font-extrabold text-slate-900 text-[13px] tracking-tight">+<%= log.recipient %></span>
+                                <button onclick="copyToClipboard('<%= log.recipient %>')" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-indigo-600 transition-opacity" title="Copy number">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                                </button>
+                            </div>
+                        </td>
+
+                        <!-- Status Badge -->
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <% if (log.status === 'SUCCESS') { %>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100/80 text-emerald-800 border border-emerald-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                                    SUCCESS
+                                </span>
+                            <% } else { %>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100/80 text-rose-800 border border-rose-200 cursor-pointer hover:bg-rose-200 transition-colors" onclick="showErrorFromRow(this)">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span>
+                                    FAILED
+                                </span>
+                            <% } %>
+                        </td>
+
+                        <!-- Device / Sender WA -->
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <% if (log.sender_number) { %>
+                                <div class="flex flex-col">
+                                    <div class="flex items-center space-x-1.5 font-mono text-[12px] font-extrabold text-slate-800">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                                        <span>+<%= log.sender_number %></span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400 font-medium">
+                                        <%= log.device_name ? log.device_name + ' (' + (log.device_id || 'auto') + ')' : (log.device_id || 'auto') %>
+                                    </span>
+                                </div>
+                            <% } else if (log.device_id) { %>
+                                <span class="font-mono text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-semibold border border-slate-200/60">
+                                    <%= log.device_name ? log.device_name + ' (' + log.device_id + ')' : log.device_id %>
+                                </span>
+                            <% } else { %>
+                                <span class="text-slate-400 italic text-[11px]">Auto / All</span>
+                            <% } %>
+                        </td>
+
+                        <!-- Client IP -->
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <div class="flex items-center space-x-1 font-mono text-[11px] text-indigo-600 font-bold">
+                                <span><%= log.ip_address %></span>
+                            </div>
+                        </td>
+
+                        <!-- Message -->
+                        <td class="py-4 px-6 max-w-md truncate text-slate-600 font-medium" title="<%= log.message %>">
+                            <%= log.message %>
+                        </td>
+
+                        <!-- Details Button -->
+                        <td class="py-4 px-6 whitespace-nowrap text-right">
+                            <button onclick="openLogModalFromRow(this)" class="p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 active:scale-95 transition-all" title="View payload details">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Log Details Modal -->
+<div id="log-detail-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 transition-all duration-200">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 transform transition-all duration-200 scale-95 animate-fade-in">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                <span>Audit Request Details</span>
+            </h3>
+            <button onclick="closeLogModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <div class="space-y-3.5 text-xs">
+            <div class="grid grid-cols-2 gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80">
+                <div>
+                    <span class="text-slate-400 font-bold uppercase text-[10px] block">Log ID</span>
+                    <span id="modal-log-id" class="font-mono font-bold text-slate-800 text-sm"></span>
+                </div>
+                <div>
+                    <span class="text-slate-400 font-bold uppercase text-[10px] block">Status</span>
+                    <span id="modal-log-status"></span>
+                </div>
+                <div>
+                    <span class="text-slate-400 font-bold uppercase text-[10px] block">Sent Via (Sender WA)</span>
+                    <span id="modal-log-sender" class="font-mono font-extrabold text-emerald-600"></span>
+                </div>
+                <div>
+                    <span class="text-slate-400 font-bold uppercase text-[10px] block">Device ID & Name</span>
+                    <span id="modal-log-device" class="font-mono text-slate-700 font-semibold"></span>
+                </div>
+                <div>
+                    <span class="text-slate-400 font-bold uppercase text-[10px] block">Target Recipient</span>
+                    <span id="modal-log-recipient" class="font-mono font-extrabold text-slate-800"></span>
+                </div>
+                <div>
+                    <span class="text-slate-400 font-bold uppercase text-[10px] block">Client IP</span>
+                    <span id="modal-log-ip" class="font-mono text-indigo-600 font-bold"></span>
+                </div>
+                <div class="col-span-2">
+                    <span class="text-slate-400 font-bold uppercase text-[10px] block">Timestamp</span>
+                    <span id="modal-log-time" class="text-slate-700 font-medium"></span>
+                </div>
+            </div>
+
+            <div>
+                <span class="text-slate-500 font-bold uppercase text-[10px] block mb-1">Message Content</span>
+                <div id="modal-log-message" class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-slate-800 font-sans whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto"></div>
+            </div>
+
+            <div id="modal-error-box" class="hidden">
+                <span class="text-rose-500 font-bold uppercase text-[10px] block mb-1">Error Information</span>
+                <div id="modal-log-error" class="p-3.5 bg-rose-50 rounded-2xl border border-rose-200 text-rose-700 font-mono text-[11px] whitespace-pre-wrap"></div>
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <button onclick="closeLogModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all active:scale-95">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Copied: ' + text, 'success');
+        });
+    }
+
+    function showErrorFromRow(el) {
+        const row = el.closest('tr');
+        const errorMsg = row.getAttribute('data-error');
+        showAlert('Detail Error Pengiriman', errorMsg || 'Unknown error occurred while dispatching message');
+    }
+
+    function openLogModalFromRow(el) {
+        const row = el.closest('tr');
+        document.getElementById('modal-log-id').innerText = '#' + row.getAttribute('data-id');
+        document.getElementById('modal-log-recipient').innerText = '+' + row.getAttribute('data-recipient');
+        document.getElementById('modal-log-ip').innerText = row.getAttribute('data-ip');
+        document.getElementById('modal-log-time').innerText = row.getAttribute('data-time');
+        document.getElementById('modal-log-message').innerText = row.getAttribute('data-msg');
+
+        const sender = row.getAttribute('data-sender');
+        const devId = row.getAttribute('data-device');
+        const devName = row.getAttribute('data-devicename');
+
+        document.getElementById('modal-log-sender').innerText = sender ? '+' + sender : 'Auto / N/A';
+        document.getElementById('modal-log-device').innerText = devName ? `${devName} (${devId})` : (devId || 'N/A');
+
+        const status = row.getAttribute('data-status');
+        const err = row.getAttribute('data-error');
+        const statusEl = document.getElementById('modal-log-status');
+        const errorBox = document.getElementById('modal-error-box');
+        const errorEl = document.getElementById('modal-log-error');
+
+        if (status === 'SUCCESS') {
+            statusEl.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">SUCCESS</span>';
+            errorBox.classList.add('hidden');
+        } else {
+            statusEl.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800">FAILED</span>';
+            errorBox.classList.remove('hidden');
+            errorEl.innerText = err || 'No error details provided';
+        }
+
+        document.getElementById('log-detail-modal').classList.remove('hidden');
+    }
+
+    function closeLogModal() {
+        document.getElementById('log-detail-modal').classList.add('hidden');
+    }
+
+    function applyFilter() {
+        const search = document.getElementById('filter-search').value.toLowerCase();
+        const status = document.getElementById('filter-status').value;
+        const rows = document.querySelectorAll('.log-row');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const rowStatus = row.getAttribute('data-status');
+            const rowRecipient = (row.getAttribute('data-recipient') || '').toLowerCase();
+            const rowIp = (row.getAttribute('data-ip') || '').toLowerCase();
+            const rowMsg = (row.getAttribute('data-msg') || '').toLowerCase();
+
+            const matchesStatus = (status === 'ALL' || rowStatus === status);
+            const matchesSearch = (rowRecipient.includes(search) || rowIp.includes(search) || rowMsg.includes(search));
+
+            if (matchesStatus && matchesSearch) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        document.getElementById('showing-count').innerText = 'Showing ' + visibleCount + ' logs';
+    }
+</script>
+
+<%- include('partials/footer') %>

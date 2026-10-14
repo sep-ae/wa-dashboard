@@ -1,0 +1,353 @@
+<%- include('partials/header') %>
+
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">API Key Management</h1>
+            <p class="text-slate-500 mt-1">Generate and manage secret keys used to authenticate external message dispatch requests.</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button onclick="openCreateKeyModal()" class="inline-flex items-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-200 transition-all hover:scale-[1.02]">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Generate API Key
+            </button>
+        </div>
+    </div>
+
+    <!-- API Keys Table Card -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-bold text-slate-800 text-base">Active API Keys</h3>
+            <span class="text-xs text-slate-400 font-medium"><%= keys.length %> Keys Registered</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/80 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        <th class="py-3.5 px-6">Name</th>
+                        <th class="py-3.5 px-6">API Key Token</th>
+                        <th class="py-3.5 px-6">Status</th>
+                        <th class="py-3.5 px-6">Created</th>
+                        <th class="py-3.5 px-6 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
+                    <% if (keys.length === 0) { %>
+                    <tr>
+                        <td colspan="5" class="py-10 text-center text-slate-400">
+                            No API Keys found. Click "Generate API Key" to create your first token.
+                        </td>
+                    </tr>
+                    <% } %>
+
+                    <% keys.forEach(key => { %>
+                    <tr class="hover:bg-slate-50/60 transition-colors">
+                        <td class="py-4 px-6 font-bold text-slate-800">
+                            <%= key.name %>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="inline-flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 font-mono text-[11px] text-slate-700">
+                                <span><%= key.key %></span>
+                                <button onclick="copyToClipboard('<%= key.key %>')" class="text-indigo-600 hover:text-indigo-800 ml-1" title="Copy to clipboard">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <% if (key.is_active) { %>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                                    Active
+                                </span>
+                            <% } else { %>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500">
+                                    Disabled
+                                </span>
+                            <% } %>
+                        </td>
+                        <td class="py-4 px-6 text-slate-400 font-mono text-[11px]">
+                            <%= new Date(key.created_at).toLocaleDateString() %>
+                        </td>
+                        <td class="py-4 px-6 text-right space-x-2">
+                            <button onclick="toggleKey('<%= key.id %>')" class="text-slate-600 hover:text-indigo-600 font-semibold text-xs">
+                                <%= key.is_active ? 'Disable' : 'Enable' %>
+                            </button>
+                            <button onclick="deleteKey('<%= key.id %>')" class="text-rose-500 hover:text-rose-700 font-semibold text-xs ml-3">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Developer Documentation & Postman Guide -->
+    <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 flex items-center">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2.5"></span>
+                    API & Postman Integration Guide
+                </h3>
+                <p class="text-xs text-slate-500 mt-0.5">Semua endpoint siap pakai di Postman. Cukup copy cURL di bawah dan paste ke fitur <strong>Import</strong> di Postman.</p>
+            </div>
+            <div class="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100">
+                <span>Awalan Bebas: 08..., +62..., 628...</span>
+            </div>
+        </div>
+
+        <!-- Documentation Tabs -->
+        <div class="space-y-4">
+            <div class="flex items-center space-x-2 border-b border-slate-100 pb-2">
+                <button onclick="switchDocTab('send')" id="tab-btn-send" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs">
+                    1. Kirim Pesan (/api/v1/send)
+                </button>
+                <button onclick="switchDocTab('check')" id="tab-btn-check" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    2. Cek Nomor WA (/api/v1/check-number)
+                </button>
+                <button onclick="switchDocTab('devices')" id="tab-btn-devices" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    3. List Device (/api/v1/devices)
+                </button>
+            </div>
+
+            <!-- Tab 1: Send Message -->
+            <div id="doc-tab-send" class="space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-[11px] font-black font-mono">POST</span>
+                        <code class="text-xs font-bold text-slate-800">http://localhost:3000/api/v1/send</code>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="copySnippet('curl-send')" class="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
+                            <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                            Copy cURL (Import ke Postman)
+                        </button>
+                        <button onclick="copySnippet('json-send')" class="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all active:scale-95">
+                            Copy JSON Body
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Code Block -->
+                <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
+                    <pre id="curl-send" class="leading-relaxed">curl -X POST http://localhost:3000/api/v1/send \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key": "<%= keys.length > 0 ? keys[0].key : 'YOUR_API_KEY_HERE' %>",
+    "number": "081234567890",
+    "message": "Halo! Pesan ini dikirim otomatis via WhatsApp Gateway API."
+  }'</pre>
+                </div>
+
+                <!-- Hidden raw JSON for clean copy -->
+                <textarea id="json-send" class="hidden">{
+  "key": "<%= keys.length > 0 ? keys[0].key : 'YOUR_API_KEY_HERE' %>",
+  "number": "081234567890",
+  "message": "Halo! Pesan ini dikirim otomatis via WhatsApp Gateway API."
+}</textarea>
+
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+                    <span class="font-bold text-slate-800">Catatan & Fitur Fallback:</span>
+                    <ul class="list-disc list-inside mt-1.5 space-y-1 text-slate-500">
+                        <li><strong class="text-slate-700">Simpel & Praktis:</strong> Request cukup berisi <code class="font-bold text-indigo-600">key</code>, <code class="font-bold text-indigo-600">number</code>, dan <code class="font-bold text-indigo-600">message</code>. Parameter <code class="font-bold">deviceId</code> sudah tidak diperlukan lagi.</li>
+                        <li><strong class="text-slate-700">Fallback Otomatis:</strong> Jika nomor WhatsApp utama sedang sibuk/gagal kirim/offline, gateway otomatis memindahkan pengiriman ke nomor WhatsApp cadangan yang aktif.</li>
+                        <li><strong class="text-slate-700">Format Fleksibel:</strong> Nomor tujuan (<code class="font-bold text-indigo-600">number</code>) bebas menggunakan format <code class="font-bold">08...</code>, <code class="font-bold">+62...</code>, atau <code class="font-bold">628...</code>.</li>
+                        <li><strong class="text-slate-700">API Key:</strong> Bisa diletakkan langsung di body JSON (<code class="font-bold">"key": "..."</code>) atau melalui header <code class="font-bold">X-API-Key</code>.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tab 2: Check Number -->
+            <div id="doc-tab-check" class="hidden space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-800 text-[11px] font-black font-mono">POST</span>
+                        <code class="text-xs font-bold text-slate-800">http://localhost:3000/api/v1/check-number</code>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="copySnippet('curl-check')" class="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
+                            <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                            Copy cURL (Import ke Postman)
+                        </button>
+                        <button onclick="copySnippet('json-check')" class="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all active:scale-95">
+                            Copy JSON Body
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Code Block -->
+                <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
+                    <pre id="curl-check" class="leading-relaxed">curl -X POST http://localhost:3000/api/v1/check-number \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key": "<%= keys.length > 0 ? keys[0].key : 'YOUR_API_KEY_HERE' %>",
+    "number": "085607025368"
+  }'</pre>
+                </div>
+
+                <!-- Hidden raw JSON -->
+                <textarea id="json-check" class="hidden">{
+  "key": "<%= keys.length > 0 ? keys[0].key : 'YOUR_API_KEY_HERE' %>",
+  "number": "085607025368"
+}</textarea>
+
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+                    <span class="font-bold text-slate-800">Contoh Respon Sukses (Nomor Terdaftar):</span>
+                    <pre class="mt-1.5 p-3 rounded-xl bg-slate-900 text-emerald-400 font-mono text-[11px]">{
+  "status": true,
+  "exists": true,
+  "jid": "6285607025368@s.whatsapp.net",
+  "senderNumber": "628123456789",
+  "deviceId": "dev_default",
+  "deviceName": "WhatsApp Utama",
+  "message": "Number is registered on WhatsApp"
+}</pre>
+                </div>
+            </div>
+
+            <!-- Tab 3: List Devices -->
+            <div id="doc-tab-devices" class="hidden space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-800 text-[11px] font-black font-mono">GET</span>
+                        <code class="text-xs font-bold text-slate-800">http://localhost:3000/api/v1/devices</code>
+                    </div>
+                    <button onclick="copySnippet('curl-devices')" class="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
+                        <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        Copy cURL (Import ke Postman)
+                    </button>
+                </div>
+
+                <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
+                    <pre id="curl-devices" class="leading-relaxed">curl -X GET http://localhost:3000/api/v1/devices \
+  -H "X-API-Key: <%= keys.length > 0 ? keys[0].key : 'YOUR_API_KEY_HERE' %>"</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Create Key -->
+<div id="create-key-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-slate-900">Generate New API Key</h3>
+            <button onclick="closeCreateKeyModal()" class="text-slate-400 hover:text-slate-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Key Label / Name</label>
+                <input type="text" id="new-key-name" placeholder="e.g. Website Checkout Bot" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+        </div>
+        <div class="mt-6 flex justify-end space-x-3">
+            <button onclick="closeCreateKeyModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50">Cancel</button>
+            <button onclick="submitCreateKey()" class="px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 shadow-md">Generate Key</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openCreateKeyModal() {
+        document.getElementById('create-key-modal').classList.remove('hidden');
+        document.getElementById('new-key-name').focus();
+    }
+    function closeCreateKeyModal() {
+        document.getElementById('create-key-modal').classList.add('hidden');
+    }
+
+    async function submitCreateKey() {
+        const name = document.getElementById('new-key-name').value.trim();
+        if (!name) return showToast('Please enter a key name', 'error');
+        try {
+            const res = await fetch('/api/api-keys/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            const data = await res.json();
+            if (data.status) {
+                showToast('API Key generated successfully!', 'success');
+                setTimeout(() => window.location.reload(), 700);
+            } else {
+                showAlert('Error', data.message || 'Failed to generate API Key');
+            }
+        } catch(e) {
+            showAlert('Network Error', e.toString());
+        }
+    }
+
+    async function toggleKey(id) {
+        try {
+            const res = await fetch('/api/api-keys/' + id + '/toggle', { method: 'POST' });
+            const data = await res.json();
+            if (data.status) {
+                showToast('API Key status updated', 'info');
+                setTimeout(() => window.location.reload(), 500);
+            } else {
+                showAlert('Error', data.message || 'Failed to update key status');
+            }
+        } catch(e) {
+            showAlert('Network Error', e.toString());
+        }
+    }
+
+    async function deleteKey(id) {
+        const ok = await showConfirm(
+            'Delete API Key?',
+            'Applications currently using this key will immediately be denied access.',
+            'Yes, Delete Key',
+            true
+        );
+        if (!ok) return;
+
+        try {
+            const res = await fetch('/api/api-keys/' + id, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.status) {
+                showToast('API Key deleted', 'success');
+                setTimeout(() => window.location.reload(), 600);
+            } else {
+                showAlert('Error', data.message || 'Failed to delete key');
+            }
+        } catch(e) {
+            showAlert('Network Error', e.toString());
+        }
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('API Key copied to clipboard!', 'success');
+        });
+    }
+
+    function switchDocTab(tab) {
+        const tabs = ['send', 'check', 'devices'];
+        tabs.forEach(t => {
+            const pane = document.getElementById('doc-tab-' + t);
+            const btn = document.getElementById('tab-btn-' + t);
+            if (t === tab) {
+                pane.classList.remove('hidden');
+                btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs';
+            } else {
+                pane.classList.add('hidden');
+                btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100';
+            }
+        });
+    }
+
+    function copySnippet(elementId) {
+        const el = document.getElementById(elementId);
+        const text = el.value || el.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Tersalin ke clipboard! Siap di-paste ke Postman.', 'success');
+        });
+    }
+</script>
+
+<%- include('partials/footer') %>

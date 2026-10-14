@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  wa-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wa-gateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - SESSION_SECRET=wa-gateway-production-secret-change-me
+      - SESSION_DIR=/app/sessions
+      - DB_PATH=/app/data/data.db
+    volumes:
+      # Persistent storage for WhatsApp sessions and SQLite DB
+      - ./sessions:/app/sessions
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/login', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s

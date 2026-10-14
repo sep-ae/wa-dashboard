@@ -1,0 +1,277 @@
+<%- include('partials/header') %>
+
+<div class="space-y-8 animate-fade-in">
+    <!-- Header with Stats -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">User Management</h1>
+            <p class="text-slate-500 mt-1">Kelola akun pengguna dashboard, role akses (Admin/Operator), dan status aktif/nonaktif.</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button onclick="openAddUserModal()" class="inline-flex items-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-200 transition-all active:scale-95">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                Add New User
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Users</p>
+            <h3 class="text-2xl font-black text-slate-800 mt-1"><%= users.length %></h3>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Users</p>
+            <h3 class="text-2xl font-black text-emerald-600 mt-1">
+                <%= users.filter(u => u.is_active === 1).length %>
+            </h3>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Disabled Users</p>
+            <h3 class="text-2xl font-black text-rose-600 mt-1">
+                <%= users.filter(u => u.is_active === 0).length %>
+            </h3>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Admin Accounts</p>
+            <h3 class="text-2xl font-black text-indigo-600 mt-1">
+                <%= users.filter(u => u.role === 'admin').length %>
+            </h3>
+        </div>
+    </div>
+
+    <!-- Users Table Card -->
+    <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <h3 class="font-bold text-slate-800 text-base">Daftar Pengguna Dashboard</h3>
+            <span class="text-xs text-slate-400 font-semibold"><%= users.length %> Akun Terdaftar</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/90 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        <th class="py-3.5 px-6">User</th>
+                        <th class="py-3.5 px-6">Role</th>
+                        <th class="py-3.5 px-6">Status Login</th>
+                        <th class="py-3.5 px-6">Tanggal Dibuat</th>
+                        <th class="py-3.5 px-6 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
+                    <% users.forEach(u => { %>
+                    <tr class="hover:bg-slate-50/60 transition-colors">
+                        <!-- User Name with Avatar -->
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
+                                    <%= u.username.charAt(0).toUpperCase() %>
+                                </div>
+                                <div>
+                                    <span class="font-bold text-slate-900 text-sm block"><%= u.username %></span>
+                                    <% if (u.id === user.id) { %>
+                                        <span class="text-[10px] text-indigo-600 font-semibold">Akun Kamu Sekarang</span>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Role Badge -->
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <% if (u.role === 'admin') { %>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-100 text-purple-800 border border-purple-200">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                    ADMIN
+                                </span>
+                            <% } else { %>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    OPERATOR
+                                </span>
+                            <% } %>
+                        </td>
+
+                        <!-- Active / Disabled Status -->
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <% if (u.is_active === 1) { %>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+                                    Aktif Bisa Login
+                                </span>
+                            <% } else { %>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span>
+                                    Dinonaktifkan
+                                </span>
+                            <% } %>
+                        </td>
+
+                        <!-- Created Date -->
+                        <td class="py-4 px-6 whitespace-nowrap font-mono text-[11px] text-slate-500">
+                            <%= new Date(u.created_at).toLocaleDateString() %>
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="py-4 px-6 whitespace-nowrap text-right space-x-2">
+                            <% if (u.id !== user.id) { %>
+                                <button onclick="toggleUserStatus('<%= u.id %>', '<%= u.username %>', <%= u.is_active %>)" 
+                                    class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all active:scale-95 <%= u.is_active ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' %>">
+                                    <%= u.is_active ? 'Nonaktifkan' : 'Aktifkan' %>
+                                </button>
+                                <button onclick="deleteUser('<%= u.id %>', '<%= u.username %>')" 
+                                    class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition-all active:scale-95">
+                                    Hapus
+                                </button>
+                            <% } else { %>
+                                <span class="text-[11px] text-slate-400 italic">Akun aktif utama</span>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Add User (shadcn Dialog style) -->
+<div id="add-user-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all duration-200 scale-95 animate-fade-in">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                <span>Tambah Pengguna Baru</span>
+            </h3>
+            <button onclick="closeAddUserModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <p class="text-xs text-slate-500 mb-5 leading-relaxed">Buat kredensial login baru untuk tim kamu dengan pilihan role akses.</p>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Username</label>
+                <input type="text" id="new-user-username" placeholder="misal: cs_andi" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Password</label>
+                <input type="password" id="new-user-password" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Role Akses</label>
+                <select id="new-user-role" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-700">
+                    <option value="operator">Operator (Kirim pesan & Cek Nomor)</option>
+                    <option value="admin">Administrator (Akses Penuh)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-end space-x-3 pt-2">
+            <button onclick="closeAddUserModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 active:scale-95 transition-all">
+                Batal
+            </button>
+            <button onclick="submitCreateUser()" id="btn-save-user" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 active:scale-95 shadow-md shadow-indigo-200 transition-all">
+                Simpan Pengguna
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAddUserModal() {
+        document.getElementById('add-user-modal').classList.remove('hidden');
+        document.getElementById('new-user-username').focus();
+    }
+    function closeAddUserModal() {
+        document.getElementById('add-user-modal').classList.add('hidden');
+    }
+
+    async function submitCreateUser() {
+        const username = document.getElementById('new-user-username').value.trim();
+        const password = document.getElementById('new-user-password').value;
+        const role = document.getElementById('new-user-role').value;
+        const btn = document.getElementById('btn-save-user');
+
+        if (!username || !password) {
+            return toast.error('Validasi Gagal', 'Username dan password wajib diisi.');
+        }
+
+        btn.disabled = true;
+        btn.innerText = 'Menyimpan...';
+
+        try {
+            const res = await fetch('/api/users/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, role })
+            });
+            const data = await res.json();
+
+            if (data.status) {
+                closeAddUserModal();
+                toast.success('Pengguna Dibuat!', `User ${username} dengan role ${role.toUpperCase()} berhasil ditambahkan.`);
+                setTimeout(() => window.location.reload(), 700);
+            } else {
+                toast.error('Gagal Membuat User', data.message);
+            }
+        } catch(err) {
+            toast.error('Network Error', err.toString());
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Simpan Pengguna';
+        }
+    }
+
+    async function toggleUserStatus(userId, username, currentStatus) {
+        const willDisable = currentStatus === 1;
+        const actionTitle = willDisable ? `Nonaktifkan ${username}?` : `Aktifkan ${username}?`;
+        const actionDesc = willDisable 
+            ? `Pengguna ${username} tidak akan bisa login ke dashboard sampai diaktifkan kembali.` 
+            : `Pengguna ${username} akan dapat kembali login ke dashboard.`;
+
+        const ok = await showConfirm(actionTitle, actionDesc, willDisable ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan', willDisable);
+        if (!ok) return;
+
+        try {
+            const res = await fetch(`/api/users/${userId}/toggle`, { method: 'POST' });
+            const data = await res.json();
+            if (data.status) {
+                toast.success('Status Diperbarui', `Akun ${username} sekarang ${willDisable ? 'nonaktif' : 'aktif'}.`);
+                setTimeout(() => window.location.reload(), 600);
+            } else {
+                toast.error('Gagal Update Status', data.message);
+            }
+        } catch(err) {
+            toast.error('Network Error', err.toString());
+        }
+    }
+
+    async function deleteUser(userId, username) {
+        const ok = await showConfirm(
+            `Hapus Akun ${username}?`,
+            `Akun ini akan dihapus permanen dari sistem. Aksi ini tidak dapat dibatalkan.`,
+            'Ya, Hapus Permanen',
+            true
+        );
+        if (!ok) return;
+
+        try {
+            const res = await fetch(`/api/users/${userId}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.status) {
+                toast.success('Akun Dihapus', `Akun ${username} berhasil dihapus.`);
+                setTimeout(() => window.location.reload(), 600);
+            } else {
+                toast.error('Gagal Menghapus Akun', data.message);
+            }
+        } catch(err) {
+            toast.error('Network Error', err.toString());
+        }
+    }
+</script>
+
+<%- include('partials/footer') %>

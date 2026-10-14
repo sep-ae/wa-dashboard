@@ -1,0 +1,364 @@
+<%- include('layout', { body: `
+<!-- Premium Background -->
+<div class="fixed inset-0 z-[-1] bg-gradient-to-br from-indigo-50 via-white to-purple-50"></div>
+
+<!-- Dashboard Container -->
+<div class="max-w-7xl mx-auto mt-6 px-4 pb-12">
+    
+    <!-- Top Stats / Header -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 tracking-tight">Control Panel</h1>
+            <p class="text-gray-500 mt-1">Manage your WhatsApp engine, send messages, and monitor incoming chats.</p>
+        </div>
+        <div class="mt-4 md:mt-0 flex space-x-3">
+            <span class="inline-flex items-center px-4 py-2 rounded-xl bg-white border border-gray-200 shadow-sm text-sm font-medium text-gray-700">
+                <div class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></div>
+                Engine Active
+            </span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- COLUMN 1: DEVICE STATUS (Span 4) -->
+        <div class="lg:col-span-4 flex flex-col space-y-6">
+            <div class="bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 flex flex-col items-center text-center relative overflow-hidden transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+                <!-- Decorative background elements -->
+                <div class="absolute -top-24 -right-24 w-48 h-48 bg-indigo-50 rounded-full blur-3xl opacity-60"></div>
+                
+                <h2 class="text-xl font-bold mb-4 text-gray-800 z-10 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    Device Connection
+                </h2>
+                
+                <div id="status-badge" class="z-10 inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 mb-6 transition-all duration-300 shadow-inner">
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-yellow-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Connecting...
+                </div>
+
+                <!-- QR State -->
+                <div id="qr-container" class="hidden w-full flex-col items-center z-10">
+                    <div class="bg-white p-4 rounded-2xl border-2 border-indigo-100 shadow-sm w-full flex justify-center group hover:border-indigo-300 transition-colors">
+                        <img id="qr-image" src="" alt="QR Code" class="w-56 h-56 object-contain filter group-hover:contrast-125 transition-all">
+                    </div>
+                    <p class="text-sm text-gray-500 mt-5 font-medium flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Scan using WhatsApp to connect.
+                    </p>
+                </div>
+
+                <!-- Connected State -->
+                <div id="connected-container" class="hidden w-full flex-col items-center z-10">
+                    <div class="relative w-28 h-28 flex items-center justify-center mb-6">
+                        <div class="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-20"></div>
+                        <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-green-200">
+                            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-gray-800">Ready to Use</h3>
+                    <p class="text-gray-500 text-sm mt-2 mb-8 px-4">Your session is secure and active.</p>
+                    
+                    <button onclick="logoutWhatsApp()" class="w-full bg-red-50 hover:bg-red-500 text-red-600 hover:text-white font-bold py-3.5 px-4 rounded-xl border border-red-100 transition-all duration-300 shadow-sm flex justify-center items-center group">
+                        <svg class="w-5 h-5 mr-2 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        Logout Session
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Quick Validator Tool -->
+            <div class="bg-white/80 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="bg-blue-100 p-2 rounded-xl mr-3 text-blue-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </span>
+                    Number Validator
+                </h3>
+                <div class="flex flex-col space-y-3">
+                    <input type="text" id="check-number-input" placeholder="e.g. 6281234..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 font-medium transition-all">
+                    <button onclick="checkNumber()" id="btn-check-num" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition-all shadow-md shadow-blue-200 flex justify-center items-center">
+                        Check Validity
+                    </button>
+                </div>
+                <div id="check-result" class="mt-4 hidden p-3 rounded-xl text-sm font-medium border text-center transition-all duration-300"></div>
+            </div>
+        </div>
+
+        <!-- COLUMN 2 & 3: MAIN TOOLS (Span 8) -->
+        <div class="lg:col-span-8 flex flex-col space-y-6 opacity-50 pointer-events-none transition-all duration-500" id="tools-container">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
+                <!-- Live Send Message Form -->
+                <div class="bg-white/80 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 flex flex-col h-[420px] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+                    <h3 class="text-lg font-bold text-gray-800 mb-5 flex items-center">
+                        <span class="bg-purple-100 p-2 rounded-xl mr-3 text-purple-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </span>
+                        Direct Message
+                    </h3>
+                    
+                    <div class="space-y-4 flex-1 flex flex-col">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Target Number</label>
+                            <input type="text" id="send-number" placeholder="628..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 outline-none text-gray-700 font-medium transition-all">
+                        </div>
+                        <div class="flex-1 flex flex-col min-h-0">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Message</label>
+                            <textarea id="send-text" placeholder="Write your message here..." class="w-full flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 outline-none text-gray-700 transition-all resize-none"></textarea>
+                        </div>
+                        <button onclick="sendDirectMessage()" id="btn-send-msg" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-purple-200 flex justify-center items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                            Send Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Inbox / Live Feed -->
+                <div class="bg-gray-900 rounded-3xl shadow-xl flex flex-col h-[420px] overflow-hidden relative group border border-gray-800">
+                    <div class="p-5 border-b border-gray-800 bg-gray-900/90 backdrop-blur-md z-10 sticky top-0 flex justify-between items-center">
+                        <h3 class="text-white font-bold flex items-center">
+                            <div class="w-2 h-2 rounded-full bg-green-400 mr-3 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.8)]"></div>
+                            Live Feed
+                        </h3>
+                        <span class="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded-md">Realtime</span>
+                    </div>
+                    
+                    <!-- Feed container -->
+                    <div id="live-feed" class="flex-1 overflow-y-auto p-4 space-y-3 font-mono text-sm scroll-smooth">
+                        <div class="text-gray-500 text-center flex flex-col items-center justify-center h-full opacity-50">
+                            <svg class="w-10 h-10 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                            Waiting for incoming messages...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Docs Card -->
+            <div class="bg-white/80 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+                 <h3 class="text-lg font-bold text-gray-800 mb-5 flex items-center">
+                    <span class="bg-gray-100 p-2 rounded-xl mr-3 text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    </span>
+                    API Reference
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gray-900 rounded-2xl p-4 group cursor-pointer hover:bg-gray-800 transition relative" onclick="navigator.clipboard.writeText('http://localhost:3000/api/send'); showToast('Send API Endpoint Copied!', 'success')">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Send Message</span>
+                            <svg class="w-4 h-4 text-gray-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div class="text-green-400 font-mono text-xs break-all">POST /api/send</div>
+                        <div class="text-gray-400 font-mono text-[10px] mt-2 border-t border-gray-700 pt-2">{ "number": "...", "message": "..." }</div>
+                    </div>
+                    <div class="bg-gray-900 rounded-2xl p-4 group cursor-pointer hover:bg-gray-800 transition relative" onclick="navigator.clipboard.writeText('http://localhost:3000/api/check-number'); showToast('Check API Endpoint Copied!', 'success')">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Check Number</span>
+                            <svg class="w-4 h-4 text-gray-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div class="text-green-400 font-mono text-xs break-all">POST /api/check-number</div>
+                        <div class="text-gray-400 font-mono text-[10px] mt-2 border-t border-gray-700 pt-2">{ "number": "..." }</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Custom Toasts for Notifications -->
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
+
+<style>
+/* Custom scrollbar for live feed */
+#live-feed::-webkit-scrollbar { width: 6px; }
+#live-feed::-webkit-scrollbar-track { background: transparent; }
+#live-feed::-webkit-scrollbar-thumb { background-color: #374151; border-radius: 10px; }
+</style>
+
+<script>
+    const socket = io();
+    const qrContainer = document.getElementById('qr-container');
+    const qrImage = document.getElementById('qr-image');
+    const connectedContainer = document.getElementById('connected-container');
+    const toolsContainer = document.getElementById('tools-container');
+    const statusBadge = document.getElementById('status-badge');
+    const liveFeed = document.getElementById('live-feed');
+
+    // Toast Notification System
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-600' : (type === 'error' ? 'bg-red-600' : 'bg-gray-800');
+        toast.className = 'transform transition-all duration-300 translate-y-10 opacity-0 ' + bgColor + ' text-white px-6 py-3 rounded-xl shadow-lg flex items-center text-sm font-medium';
+        toast.innerHTML = type === 'success' 
+            ? '<svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' + message
+            : '<svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' + message;
+        
+        document.getElementById('toast-container').appendChild(toast);
+        
+        // Animate in
+        setTimeout(() => { toast.classList.remove('translate-y-10', 'opacity-0'); }, 10);
+        // Animate out and remove
+        setTimeout(() => {
+            toast.classList.add('translate-y-10', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    function updateUI(status, qr = null) {
+        if (status === 'qr' && qr) {
+            qrContainer.classList.remove('hidden');
+            qrContainer.classList.add('flex');
+            connectedContainer.classList.add('hidden');
+            toolsContainer.classList.add('opacity-50', 'pointer-events-none');
+            qrImage.src = qr;
+            
+            statusBadge.className = "z-10 inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-blue-100 text-blue-800 mb-6 transition-all shadow-sm";
+            statusBadge.innerHTML = '<svg class="w-4 h-4 mr-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Waiting for Scan';
+        } else if (status === 'connected' || status === 'open') {
+            qrContainer.classList.add('hidden');
+            qrContainer.classList.remove('flex');
+            connectedContainer.classList.remove('hidden');
+            connectedContainer.classList.add('flex');
+            toolsContainer.classList.remove('opacity-50', 'pointer-events-none');
+            
+            statusBadge.className = "z-10 inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-green-100 text-green-800 mb-6 transition-all shadow-sm border border-green-200";
+            statusBadge.innerHTML = '<svg class="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Connected';
+        } else if (status === 'disconnected' || status === 'close') {
+            qrContainer.classList.add('hidden');
+            qrContainer.classList.remove('flex');
+            connectedContainer.classList.add('hidden');
+            connectedContainer.classList.remove('flex');
+            toolsContainer.classList.add('opacity-50', 'pointer-events-none');
+            
+            statusBadge.className = "z-10 inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-red-100 text-red-800 mb-6 transition-all shadow-sm border border-red-200";
+            statusBadge.innerHTML = '<svg class="w-4 h-4 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Disconnected';
+        }
+    }
+
+    socket.on('init_status', (data) => updateUI(data.status, data.qr));
+    socket.on('wa_status', (data) => updateUI(data.status, data.qr));
+    
+    // Live Feed handler
+    let feedCount = 0;
+    socket.on('wa_message', (data) => {
+        if(feedCount === 0) liveFeed.innerHTML = ''; // clear waiting text
+        feedCount++;
+
+        const msg = data.messages[0];
+        if(!msg) return;
+
+        const remoteJid = msg.key.remoteJid;
+        const pushName = msg.pushName || 'Unknown';
+        
+        let textContent = '[Media/System Message]';
+        if (msg.message) {
+            textContent = msg.message.conversation || 
+                          msg.message.extendedTextMessage?.text || 
+                          (msg.message.imageMessage ? '[Image]' : textContent);
+        }
+
+        const isFromMe = msg.key.fromMe;
+        const colorClass = isFromMe ? 'text-purple-400' : 'text-green-400';
+        const senderLabel = isFromMe ? 'You' : pushName;
+
+        const feedItem = document.createElement('div');
+        feedItem.className = 'bg-gray-800 rounded-lg p-3 border-l-4 border-gray-600 shadow-sm opacity-0 transform translate-y-4 transition-all duration-300';
+        feedItem.style.borderLeftColor = isFromMe ? '#a78bfa' : '#4ade80'; // dynamic border
+        feedItem.innerHTML = '<div class="flex justify-between items-center mb-1"><span class="' + colorClass + ' font-bold text-xs">' + senderLabel + ' <span class="text-gray-500 font-normal">(' + remoteJid.split('@')[0] + ')</span></span><span class="text-[10px] text-gray-500">' + new Date().toLocaleTimeString() + '</span></div><div class="text-gray-300 text-sm whitespace-pre-wrap break-words">' + textContent + '</div>';
+        
+        liveFeed.appendChild(feedItem);
+        liveFeed.scrollTop = liveFeed.scrollHeight; // Auto scroll
+
+        // Animate in
+        setTimeout(() => { feedItem.classList.remove('opacity-0', 'translate-y-4'); }, 50);
+    });
+
+    async function checkNumber() {
+        const num = document.getElementById('check-number-input').value;
+        const resultDiv = document.getElementById('check-result');
+        const btn = document.getElementById('btn-check-num');
+        if (!num) return showToast('Masukkan nomor terlebih dahulu!', 'error');
+
+        btn.disabled = true;
+        btn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+        resultDiv.classList.remove('hidden', 'bg-green-50', 'text-green-800', 'border-green-200', 'bg-red-50', 'text-red-800', 'border-red-200');
+        resultDiv.textContent = 'Memeriksa...';
+        resultDiv.classList.add('bg-gray-100', 'text-gray-800', 'border-gray-200');
+
+        try {
+            const res = await fetch('/api/check-number', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ number: num })
+            });
+            const data = await res.json();
+            
+            resultDiv.classList.remove('bg-gray-100', 'text-gray-800', 'border-gray-200');
+            if (data.exists) {
+                resultDiv.classList.add('bg-green-50', 'text-green-800', 'border-green-200');
+                resultDiv.innerHTML = '<div class="flex items-center justify-center"><svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>Valid WhatsApp Number</span></div>';
+            } else {
+                resultDiv.classList.add('bg-red-50', 'text-red-800', 'border-red-200');
+                resultDiv.innerHTML = '<div class="flex items-center justify-center"><svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>Not Registered</span></div>';
+            }
+        } catch (err) {
+            showToast('Error checking number', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Check Validity';
+        }
+    }
+
+    async function sendDirectMessage() {
+        const num = document.getElementById('send-number').value;
+        const msg = document.getElementById('send-text').value;
+        const btn = document.getElementById('btn-send-msg');
+        
+        if (!num || !msg) return showToast('Isi nomor dan pesan dulu bro!', 'error');
+
+        btn.disabled = true;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+        try {
+            const res = await fetch('/api/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ number: num, message: msg })
+            });
+            const data = await res.json();
+            
+            if (data.status) {
+                showToast('Pesan berhasil terkirim!', 'success');
+                document.getElementById('send-text').value = ''; // clear text
+            } else {
+                showToast('Gagal mengirim: ' + data.message, 'error');
+            }
+        } catch (err) {
+            showToast('Error sending message', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    }
+
+    async function logoutWhatsApp() {
+        if(!confirm('Apakah kamu yakin ingin mematikan mesin dan menghapus sesi?')) return;
+        try {
+            const res = await fetch('/api/logout', { method: 'POST' });
+            const data = await res.json();
+            if(data.status) {
+                showToast('Mesin berhasil dihentikan!', 'success');
+                updateUI('disconnected');
+            } else {
+                showToast('Gagal: ' + data.message, 'error');
+            }
+        } catch (err) {
+            showToast('Terjadi kesalahan pada server', 'error');
+        }
+    }
+</script>
+` }) %>

@@ -115,11 +115,16 @@
                         <!-- Actions -->
                         <td class="py-4 px-6 whitespace-nowrap text-right space-x-2">
                             <% if (u.id !== user.id) { %>
-                                <button onclick="toggleUserStatus('<%= u.id %>', '<%= u.username %>', <%= u.is_active %>)" 
+                                <button onclick="handleToggleUser(this)" 
+                                    data-id="<%= u.id %>" 
+                                    data-username="<%= u.username %>" 
+                                    data-status="<%= u.is_active %>"
                                     class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all active:scale-95 <%= u.is_active ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' %>">
                                     <%= u.is_active ? 'Nonaktifkan' : 'Aktifkan' %>
                                 </button>
-                                <button onclick="deleteUser('<%= u.id %>', '<%= u.username %>')" 
+                                <button onclick="handleDeleteUser(this)" 
+                                    data-id="<%= u.id %>" 
+                                    data-username="<%= u.username %>"
                                     class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition-all active:scale-95">
                                     Hapus
                                 </button>
@@ -224,6 +229,19 @@
             btn.disabled = false;
             btn.innerText = 'Simpan Pengguna';
         }
+    }
+
+    function handleToggleUser(btn) {
+        const userId = btn.getAttribute('data-id');
+        const username = btn.getAttribute('data-username');
+        const currentStatus = parseInt(btn.getAttribute('data-status'), 10);
+        toggleUserStatus(userId, username, currentStatus);
+    }
+
+    function handleDeleteUser(btn) {
+        const userId = btn.getAttribute('data-id');
+        const username = btn.getAttribute('data-username');
+        deleteUser(userId, username);
     }
 
     async function toggleUserStatus(userId, username, currentStatus) {

@@ -234,19 +234,23 @@
             <!-- Tab 4: PHP Native Implementation (Model & Controller) -->
             <div id="doc-tab-php" class="hidden space-y-5">
                 <!-- Info Banner -->
-                <div class="p-4 rounded-2xl bg-gradient-to-r from-indigo-900/90 to-slate-900 border border-indigo-700/40 text-white flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
+                <div class="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-100 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs" style="background-color: #f0f4ff; border-color: #e0e7ff;">
                     <div>
                         <div class="flex items-center space-x-2">
-                            <span class="px-2 py-0.5 rounded-md bg-indigo-500/30 text-indigo-200 text-[11px] font-black uppercase font-mono border border-indigo-400/30">PHP Native MVC</span>
-                            <span class="text-xs text-indigo-200 font-semibold">• Model & Controller Pattern</span>
+                            <span class="px-2.5 py-0.5 rounded-md bg-indigo-600 text-white text-[11px] font-black uppercase font-mono shadow-xs">PHP Native MVC</span>
+                            <span class="text-xs text-indigo-900 font-bold">• Framework Pattern Sesuai Codebase Anda</span>
                         </div>
-                        <h4 class="text-sm font-bold text-white mt-1">Implementasi PHP Native MVC (<code class="font-mono text-emerald-400">class ... extends controller</code>)</h4>
-                        <p class="text-xs text-slate-300 mt-0.5">Disesuaikan persis dengan arsitektur framework Native Anda. Cukup buat <code class="font-bold text-white">whatsapp_model.php</code>, lalu panggil di controller mana pun dengan <code class="font-mono text-indigo-300">$this->model('whatsapp_model')->kirim_pesan(...)</code>.</p>
+                        <h4 class="text-sm font-bold text-slate-900 mt-1.5">
+                            Implementasi Model & Controller (<code class="font-mono text-indigo-700 font-bold bg-white px-2 py-0.5 rounded border border-indigo-200">class ... extends controller</code>)
+                        </h4>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            Cukup buat 1 file model <code class="font-bold text-slate-900 bg-white px-1.5 py-0.5 rounded border border-slate-200">whatsapp_model.php</code>, lalu panggil di controller mana pun dengan <code class="font-mono font-bold text-indigo-700 bg-white px-1.5 py-0.5 rounded border border-indigo-200">$this->model('whatsapp_model')->kirim_pesan(...)</code>.
+                        </p>
                     </div>
                     <div class="flex items-center space-x-2 shrink-0">
-                        <span class="text-[11px] text-indigo-300 font-mono bg-black/30 px-3 py-1.5 rounded-xl border border-white/10">
-                            Host: <strong class="text-white"><%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'https://wa.septito.my.id' %></strong>
-                        </span>
+                        <div class="text-xs text-slate-700 font-mono bg-white px-3 py-2 rounded-xl border border-indigo-200 shadow-xs">
+                            <span class="text-slate-400 text-[11px]">Server:</span> <strong class="text-indigo-700"><%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'https://wa.septito.my.id' %></strong>
+                        </div>
                     </div>
                 </div>
 

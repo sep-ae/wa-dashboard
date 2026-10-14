@@ -204,6 +204,76 @@ app.delete('/api/users/:id', requireAuth, requireAdmin, (req, res) => {
     }
 });
 
+// Change own username / password
+app.post('/api/users/change-password', requireAuth, (req, res) => {
+    try {
+        const { currentPassword, newPassword, newUsername } = req.body;
+        const userId = req.session.user.id;
+
+        const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+        if (!user) {
+            return res.status(404).json({ status: false, message: 'User tidak ditemukan.' });
+        }
+
+        if (currentPassword) {
+            const isMatch = bcrypt.compareSync(currentPassword, user.password_hash);
+            if (!isMatch) {
+                return res.status(400).json({ status: false, message: 'Password lama / saat ini salah.' });
+            }
+        }
+
+        let cleanUsername = user.username;
+        if (newUsername && newUsername.trim() !== '') {
+            cleanUsername = newUsername.trim().toLowerCase();
+            if (cleanUsername !== user.username) {
+                const exist = db.prepare('SELECT id FROM users WHERE username = ? AND id != ?').get(cleanUsername, userId);
+                if (exist) {
+                    return res.status(400).json({ status: false, message: 'Username sudah digunakan oleh akun lain.' });
+                }
+            }
+        }
+
+        if (newPassword && newPassword.trim() !== '') {
+            if (newPassword.trim().length < 5) {
+                return res.status(400).json({ status: false, message: 'Password baru minimal 5 karakter.' });
+            }
+            const newHash = bcrypt.hashSync(newPassword.trim(), 10);
+            db.prepare('UPDATE users SET username = ?, password_hash = ? WHERE id = ?').run(cleanUsername, newHash, userId);
+        } else {
+            db.prepare('UPDATE users SET username = ? WHERE id = ?').run(cleanUsername, userId);
+        }
+
+        req.session.user.username = cleanUsername;
+        res.json({ status: true, message: 'Akun berhasil diperbarui.' });
+    } catch (err) {
+        res.status(500).json({ status: false, message: err.message });
+    }
+});
+
+// Admin resets another user's password
+app.post('/api/users/:id/reset-password', requireAuth, requireAdmin, (req, res) => {
+    try {
+        const targetId = parseInt(req.params.id);
+        const { newPassword } = req.body;
+
+        if (!newPassword || newPassword.trim().length < 5) {
+            return res.status(400).json({ status: false, message: 'Password baru minimal 5 karakter.' });
+        }
+
+        const user = db.prepare('SELECT id, username FROM users WHERE id = ?').get(targetId);
+        if (!user) {
+            return res.status(404).json({ status: false, message: 'User tidak ditemukan.' });
+        }
+
+        const newHash = bcrypt.hashSync(newPassword.trim(), 10);
+        db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(newHash, targetId);
+
+        res.json({ status: true, message: `Password untuk user ${user.username} berhasil diperbarui.` });
+    } catch (err) {
+        res.status(500).json({ status: false, message: err.message });
+    }
+});
+
 // ==========================================
 // DASHBOARD INTERNAL ACTIONS (Protected)
 // ==========================================

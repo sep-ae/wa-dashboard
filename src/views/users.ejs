@@ -129,7 +129,11 @@
                                     Hapus
                                 </button>
                             <% } else { %>
-                                <span class="text-[11px] text-slate-400 italic">Akun aktif utama</span>
+                                <button onclick="openChangePasswordModal('<%= u.username %>')" 
+                                    class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-600 border border-indigo-200 hover:bg-indigo-100 transition-all active:scale-95 shadow-2xs">
+                                    <svg class="w-3.5 h-3.5 mr-1 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                    Ganti User & Password
+                                </button>
                             <% } %>
                         </td>
                     </tr>
@@ -186,6 +190,52 @@
     </div>
 </div>
 
+<!-- Modal Ganti Password & Username -->
+<div id="change-pwd-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all duration-200 scale-95 animate-fade-in">
+        <div class="flex justify-between items-center mb-5">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">Ganti User & Password</h3>
+            </div>
+            <button onclick="closeChangePasswordModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-100 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <form id="change-pwd-form" onsubmit="submitChangePassword(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Username</label>
+                <input type="text" id="cp-username" required
+                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Password Lama / Saat Ini</label>
+                <input type="password" id="cp-current-password" required placeholder="Password login kamu sekarang"
+                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Password Baru</label>
+                <input type="password" id="cp-new-password" required placeholder="Minimal 5 karakter" minlength="5"
+                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all">
+            </div>
+
+            <div class="flex justify-end space-x-2.5 pt-3">
+                <button type="button" onclick="closeChangePasswordModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-all">
+                    Batal
+                </button>
+                <button type="submit" id="btn-save-pwd" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-200 transition-all active:scale-95">
+                    Simpan Perubahan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     function openAddUserModal() {
         document.getElementById('add-user-modal').classList.remove('hidden');
@@ -193,6 +243,54 @@
     }
     function closeAddUserModal() {
         document.getElementById('add-user-modal').classList.add('hidden');
+    }
+
+    function openChangePasswordModal(username) {
+        document.getElementById('cp-username').value = username || '';
+        document.getElementById('cp-current-password').value = '';
+        document.getElementById('cp-new-password').value = '';
+        document.getElementById('change-pwd-modal').classList.remove('hidden');
+        document.getElementById('cp-current-password').focus();
+    }
+
+    function closeChangePasswordModal() {
+        document.getElementById('change-pwd-modal').classList.add('hidden');
+    }
+
+    async function submitChangePassword(e) {
+        e.preventDefault();
+        const newUsername = document.getElementById('cp-username').value.trim();
+        const currentPassword = document.getElementById('cp-current-password').value;
+        const newPassword = document.getElementById('cp-new-password').value;
+        const btn = document.getElementById('btn-save-pwd');
+
+        if (!newUsername || !currentPassword || !newPassword) {
+            return toast.error('Validasi Gagal', 'Semua field wajib diisi.');
+        }
+
+        btn.disabled = true;
+        btn.innerText = 'Menyimpan...';
+
+        try {
+            const res = await fetch('/api/users/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newUsername, currentPassword, newPassword })
+            });
+            const data = await res.json();
+            if (data.status) {
+                closeChangePasswordModal();
+                toast.success('Berhasil Diperbarui!', data.message);
+                setTimeout(() => window.location.reload(), 700);
+            } else {
+                toast.error('Gagal', data.message);
+            }
+        } catch (err) {
+            toast.error('Network Error', err.toString());
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Simpan Perubahan';
+        }
     }
 
     async function submitCreateUser() {

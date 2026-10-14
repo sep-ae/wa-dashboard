@@ -1,13 +1,8 @@
-# Multi-stage Dockerfile for WhatsApp Gateway Dashboard
-
-# ================================
-# Stage 1: Build & Dependencies
-# ================================
-FROM node:20-bookworm-slim AS builder
+FROM node:22-bookworm-slim
 
 WORKDIR /app
 
-# Install native build tools for better-sqlite3
+# Install native build tools for compiling better-sqlite3
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     make \
@@ -17,41 +12,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy package manifests
 COPY package*.json ./
 
-# Install all dependencies (including devDependencies for Tailwind compilation)
+# Install dependencies (better-sqlite3 compiles natively on Node 22)
 RUN npm install
 
 # Copy application files
 COPY . .
 
-# Compile Tailwind CSS bundle for production
+# Compile Tailwind CSS bundle
 RUN npm run build:css
 
-# Prune devDependencies to keep image lightweight
-RUN npm prune --omit=dev
-
-# ================================
-# Stage 2: Production Runner
-# ================================
-FROM node:20-bookworm-slim AS runner
-
-WORKDIR /app
+# Create persistent storage directories
+RUN mkdir -p /app/sessions /app/data
 
 ENV NODE_ENV=production \
     PORT=3000 \
     SESSION_DIR=/app/sessions \
     DB_PATH=/app/data/data.db
-
-# Create persistent storage directories
-RUN mkdir -p /app/sessions /app/data
-
-# Copy built node_modules and files from builder
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/src ./src
-COPY --from=builder /app/package.json ./package.json
-
-# Declare persistent volumes
-VOLUME ["/app/sessions", "/app/data"]
 
 EXPOSE 3000
 

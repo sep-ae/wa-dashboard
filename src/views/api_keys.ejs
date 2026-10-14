@@ -101,15 +101,19 @@
 
         <!-- Documentation Tabs -->
         <div class="space-y-4">
-            <div class="flex items-center space-x-2 border-b border-slate-100 pb-2">
-                <button onclick="switchDocTab('send')" id="tab-btn-send" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs">
+            <div class="flex items-center space-x-2 border-b border-slate-100 pb-2 overflow-x-auto">
+                <button onclick="switchDocTab('send')" id="tab-btn-send" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs whitespace-nowrap">
                     1. Kirim Pesan (/api/v1/send)
                 </button>
-                <button onclick="switchDocTab('check')" id="tab-btn-check" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                <button onclick="switchDocTab('check')" id="tab-btn-check" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap">
                     2. Cek Nomor WA (/api/v1/check-number)
                 </button>
-                <button onclick="switchDocTab('devices')" id="tab-btn-devices" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                <button onclick="switchDocTab('devices')" id="tab-btn-devices" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap">
                     3. List Device (/api/v1/devices)
+                </button>
+                <button onclick="switchDocTab('php')" id="tab-btn-php" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1.5">
+                    <span class="px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 text-[10px] font-black font-mono">PHP</span>
+                    <span>4. Contoh PHP Native (Model & Controller)</span>
                 </button>
             </div>
 
@@ -118,7 +122,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center space-x-2">
                         <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-[11px] font-black font-mono">POST</span>
-                        <code class="text-xs font-bold text-slate-800">http://localhost:3000/api/v1/send</code>
+                        <code class="text-xs font-bold text-slate-800"><%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'http://localhost:3000' %>/api/v1/send</code>
                     </div>
                     <div class="flex items-center space-x-2">
                         <button onclick="copySnippet('curl-send')" class="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
@@ -133,7 +137,7 @@
 
                 <!-- Code Block -->
                 <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
-                    <pre id="curl-send" class="leading-relaxed">curl -X POST http://localhost:3000/api/v1/send \
+                    <pre id="curl-send" class="leading-relaxed">curl -X POST <%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'http://localhost:3000' %>/api/v1/send \
   -H "Content-Type: application/json" \
   -d '{
     "key": "<%= keys.length > 0 ? keys[0].key : 'YOUR_API_KEY_HERE' %>",
@@ -165,7 +169,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center space-x-2">
                         <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-800 text-[11px] font-black font-mono">POST</span>
-                        <code class="text-xs font-bold text-slate-800">http://localhost:3000/api/v1/check-number</code>
+                        <code class="text-xs font-bold text-slate-800"><%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'http://localhost:3000' %>/api/v1/check-number</code>
                     </div>
                     <div class="flex items-center space-x-2">
                         <button onclick="copySnippet('curl-check')" class="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
@@ -180,7 +184,7 @@
 
                 <!-- Code Block -->
                 <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
-                    <pre id="curl-check" class="leading-relaxed">curl -X POST http://localhost:3000/api/v1/check-number \
+                    <pre id="curl-check" class="leading-relaxed">curl -X POST <%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'http://localhost:3000' %>/api/v1/check-number \
   -H "Content-Type: application/json" \
   -d '{
     "key": "<%= keys.length > 0 ? keys[0].key : 'YOUR_API_KEY_HERE' %>",
@@ -213,7 +217,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center space-x-2">
                         <span class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-800 text-[11px] font-black font-mono">GET</span>
-                        <code class="text-xs font-bold text-slate-800">http://localhost:3000/api/v1/devices</code>
+                        <code class="text-xs font-bold text-slate-800"><%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'http://localhost:3000' %>/api/v1/devices</code>
                     </div>
                     <button onclick="copySnippet('curl-devices')" class="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
                         <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
@@ -222,8 +226,394 @@
                 </div>
 
                 <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
-                    <pre id="curl-devices" class="leading-relaxed">curl -X GET http://localhost:3000/api/v1/devices \
+                    <pre id="curl-devices" class="leading-relaxed">curl -X GET <%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'http://localhost:3000' %>/api/v1/devices \
   -H "X-API-Key: <%= keys.length > 0 ? keys[0].key : 'YOUR_API_KEY_HERE' %>"</pre>
+                </div>
+            </div>
+
+            <!-- Tab 4: PHP Native Implementation (Model & Controller) -->
+            <div id="doc-tab-php" class="hidden space-y-5">
+                <!-- Info Banner -->
+                <div class="p-4 rounded-2xl bg-gradient-to-r from-indigo-900/90 to-slate-900 border border-indigo-700/40 text-white flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 rounded-md bg-indigo-500/30 text-indigo-200 text-[11px] font-black uppercase font-mono border border-indigo-400/30">PHP Native MVC</span>
+                            <span class="text-xs text-indigo-200 font-semibold">• No External Library (Pure cURL)</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-white mt-1">Implementasi Model & Controller PHP Native</h4>
+                        <p class="text-xs text-slate-300 mt-0.5">Kode siap pakai berbasis OOP PHP (kompatibel PHP 7.4 - 8.3+). Otomatis menangani fallback multi-device, validasi nomor, dan response format JSON.</p>
+                    </div>
+                    <div class="flex items-center space-x-2 shrink-0">
+                        <span class="text-[11px] text-indigo-300 font-mono bg-black/30 px-3 py-1.5 rounded-xl border border-white/10">
+                            Host: <strong class="text-white"><%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'https://wa.septito.my.id' %></strong>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Sub-tab Navigation -->
+                <div class="flex items-center space-x-2 bg-slate-100 p-1.5 rounded-2xl overflow-x-auto">
+                    <button onclick="switchPhpSubTab('model')" id="php-btn-model" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-slate-900 text-white shadow-xs flex items-center space-x-1.5 whitespace-nowrap">
+                        <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7z"></path></svg>
+                        <span>1. Model (WhatsAppGateway.php)</span>
+                    </button>
+                    <button onclick="switchPhpSubTab('controller')" id="php-btn-controller" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 flex items-center space-x-1.5 whitespace-nowrap">
+                        <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        <span>2. Controller (NotificationController.php)</span>
+                    </button>
+                    <button onclick="switchPhpSubTab('index')" id="php-btn-index" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 flex items-center space-x-1.5 whitespace-nowrap">
+                        <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <span>3. Routing (index.php)</span>
+                    </button>
+                    <button onclick="switchPhpSubTab('arch')" id="php-btn-arch" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 flex items-center space-x-1.5 whitespace-nowrap">
+                        <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <span>4. Struktur & Panduan</span>
+                    </button>
+                </div>
+
+                <!-- Sub-tab 1: Model -->
+                <div id="php-sub-model" class="space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800 text-[11px] font-black font-mono">FILE MODEL</span>
+                            <code class="text-xs font-bold text-slate-800">models/WhatsAppGateway.php</code>
+                        </div>
+                        <button onclick="copySnippet('code-php-model')" class="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
+                            <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                            Copy Model Code
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
+                        <pre id="code-php-model" class="leading-relaxed">&lt;?php
+/**
+ * WhatsApp Gateway Model
+ * Menangani koneksi HTTP cURL Native ke server WhatsApp Gateway.
+ * Kompatibel dengan PHP 7.4 - 8.3+ (Tanpa dependensi Composer / Guzzle).
+ */
+class WhatsAppGateway
+{
+    private string $baseUrl;
+    private string $apiKey;
+
+    /**
+     * Inisialisasi Gateway dengan Base URL dan API Key
+     */
+    public function __construct(
+        string $baseUrl = '<%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'https://wa.septito.my.id' %>',
+        string $apiKey = '<%= keys.length > 0 ? keys[0].key : 'YOUR_API_KEY_HERE' %>'
+    ) {
+        $this->baseUrl = rtrim($baseUrl, '/');
+        $this->apiKey = $apiKey;
+    }
+
+    /**
+     * Kirim pesan teks WhatsApp
+     * Gateway otomatis melakukan fallback ke nomor WhatsApp cadangan jika nomor utama sibuk/offline.
+     *
+     * @param string $number  Nomor tujuan (format bebas: 08xx, 628xx, +628xx)
+     * @param string $message Isi pesan WhatsApp
+     * @return array Respon terurai dari server gateway
+     */
+    public function sendMessage(string $number, string $message): array
+    {
+        return $this->request('POST', '/api/v1/send', [
+            'key'     => $this->apiKey,
+            'number'  => $number,
+            'message' => $message
+        ]);
+    }
+
+    /**
+     * Cek apakah nomor tujuan terdaftar dan aktif di WhatsApp
+     * Sangat disarankan untuk memvalidasi nomor sebelum mengirim pesan promosi/OTP.
+     *
+     * @param string $number Nomor tujuan
+     * @return array [status => bool, exists => bool, jid => string]
+     */
+    public function checkNumber(string $number): array
+    {
+        return $this->request('POST', '/api/v1/check-number', [
+            'key'    => $this->apiKey,
+            'number' => $number
+        ]);
+    }
+
+    /**
+     * Ambil daftar seluruh nomor / device WhatsApp yang terhubung di gateway
+     *
+     * @return array
+     */
+    public function getDevices(): array
+    {
+        return $this->request('GET', '/api/v1/devices');
+    }
+
+    /**
+     * Helper cURL Request Native
+     */
+    private function request(string $method, string $endpoint, ?array $body = null): array
+    {
+        $url = $this->baseUrl . $endpoint;
+        $ch = curl_init();
+
+        $headers = [
+            'Accept: application/json',
+            'X-API-Key: ' . $this->apiKey
+        ];
+
+        $curlOptions = [
+            CURLOPT_URL            => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_SSL_VERIFYPEER => true
+        ];
+
+        if (strtoupper($method) === 'POST') {
+            $curlOptions[CURLOPT_POST] = true;
+            if ($body !== null) {
+                $jsonData = json_encode($body);
+                $curlOptions[CURLOPT_POSTFIELDS] = $jsonData;
+                $headers[] = 'Content-Type: application/json';
+                $headers[] = 'Content-Length: ' . strlen($jsonData);
+            }
+        }
+
+        $curlOptions[CURLOPT_HTTPHEADER] = $headers;
+        curl_setopt_array($ch, $curlOptions);
+
+        $rawResponse = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($curlError) {
+            return [
+                'status'   => false,
+                'httpCode' => 500,
+                'message'  => 'cURL Connection Error: ' . $curlError
+            ];
+        }
+
+        $response = json_decode($rawResponse, true);
+        if (!is_array($response)) {
+            return [
+                'status'   => false,
+                'httpCode' => $httpCode,
+                'message'  => 'Invalid JSON response dari server gateway',
+                'raw'      => $rawResponse
+            ];
+        }
+
+        $response['httpCode'] = $httpCode;
+        return $response;
+    }
+}</pre>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+                        <span class="font-bold text-slate-800">Penjelasan Model:</span>
+                        <p class="mt-1 text-slate-500">Model ini mengenkapsulasi seluruh komunikasi HTTP ke WA Gateway. Sudah terpasang otomatis Base URL (<code class="font-bold text-indigo-600"><%= typeof currentOrigin !== 'undefined' ? currentOrigin : 'https://wa.septito.my.id' %></code>) dan API Key Anda, sehingga tinggal di-require tanpa ubah konfigurasi manual.</p>
+                    </div>
+                </div>
+
+                <!-- Sub-tab 2: Controller -->
+                <div id="php-sub-controller" class="hidden space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-[11px] font-black font-mono">FILE CONTROLLER</span>
+                            <code class="text-xs font-bold text-slate-800">controllers/NotificationController.php</code>
+                        </div>
+                        <button onclick="copySnippet('code-php-controller')" class="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
+                            <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                            Copy Controller Code
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
+                        <pre id="code-php-controller" class="leading-relaxed">&lt;?php
+require_once __DIR__ . '/../models/WhatsAppGateway.php';
+
+/**
+ * NotificationController
+ * Mengatur alur logika validasi dan pengiriman notifikasi WhatsApp
+ */
+class NotificationController
+{
+    private WhatsAppGateway $waGateway;
+
+    public function __construct()
+    {
+        // Inisialisasi Model WhatsAppGateway
+        $this->waGateway = new WhatsAppGateway();
+    }
+
+    /**
+     * Contoh Aksi 1: Kirim Konfirmasi Pesanan / Invoice Pelanggan
+     */
+    public function sendInvoiceNotification(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        // 1. Ambil input dari JSON payload (AJAX/Fetch) atau $_POST biasa
+        $rawInput = file_get_contents('php://input');
+        $input = json_decode($rawInput, true) ?: $_POST;
+
+        $phone        = trim($input['phone'] ?? '');
+        $customerName = trim($input['customer_name'] ?? 'Pelanggan');
+        $invoiceNo    = trim($input['invoice_no'] ?? 'INV-' . date('YmdHis'));
+        $totalAmount  = trim($input['total_amount'] ?? 'Rp 150.000');
+
+        // 2. Validasi kelengkapan nomor tujuan
+        if (empty($phone)) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Nomor WhatsApp penerima wajib diisi!'
+            ]);
+            return;
+        }
+
+        // 3. Validasi real-time: cek apakah nomor terdaftar di WhatsApp
+        $check = $this->waGateway->checkNumber($phone);
+        if (empty($check['exists'])) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Nomor ' . $phone . ' tidak terdaftar di WhatsApp!'
+            ]);
+            return;
+        }
+
+        // 4. Susun pesan dengan format WhatsApp (*tebal*, _miring_, baris baru \n)
+        $message = "Halo *{$customerName}*,\n\n"
+                 . "Pesanan Anda dengan nomor tagihan *#{$invoiceNo}* telah kami terima.\n"
+                 . "Total Pembayaran: *{$totalAmount}*\n\n"
+                 . "Pesanan Anda akan segera diproses dan dikirimkan.\n"
+                 . "Terima kasih atas kepercayaannya! 🙏";
+
+        // 5. Eksekusi pengiriman via Model (Gateway server otomatis fallback jika ada device offline)
+        $result = $this->waGateway->sendMessage($phone, $message);
+
+        // 6. Kembalikan JSON response ke client
+        if (!empty($result['status']) && $result['status'] === true) {
+            http_response_code(200);
+            echo json_encode([
+                'success'      => true,
+                'message'      => 'Notifikasi WhatsApp berhasil dikirim!',
+                'senderNumber' => $result['senderNumber'] ?? null,
+                'deviceId'     => $result['deviceId'] ?? null,
+                'deviceName'   => $result['deviceName'] ?? null
+            ]);
+        } else {
+            http_response_code($result['httpCode'] ?? 500);
+            echo json_encode([
+                'success' => false,
+                'message' => $result['message'] ?? 'Gagal mengirim pesan WhatsApp.',
+                'error'   => $result
+            ]);
+        }
+    }
+
+    /**
+     * Contoh Aksi 2: Kirim Kode OTP Verifikasi
+     *
+     * @param string $phone
+     * @param string $otpCode
+     * @return array
+     */
+    public function sendOtp(string $phone, string $otpCode): array
+    {
+        $message = "Kode OTP verifikasi akun Anda adalah: *{$otpCode}*.\n\n"
+                 . "Jangan berikan kode ini kepada siapapun demi keamanan akun Anda. Berlaku 5 menit.";
+
+        return $this->waGateway->sendMessage($phone, $message);
+    }
+}</pre>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+                        <span class="font-bold text-slate-800">Fitur & Keunggulan Controller:</span>
+                        <ul class="list-disc list-inside mt-1 space-y-1 text-slate-500">
+                            <li>Mendukung input dari request JSON (via <code class="font-bold text-indigo-600">file_get_contents('php://input')</code>) maupun form standar <code class="font-bold text-indigo-600">$_POST</code>.</li>
+                            <li>Melakukan pengecekan validitas WhatsApp terlebih dahulu sebelum mengirim (<code class="font-bold text-indigo-600">checkNumber</code>) untuk mencegah nomor dibanned atau pesan tersendat.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sub-tab 3: Routing -->
+                <div id="php-sub-index" class="hidden space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 text-[11px] font-black font-mono">FILE ROUTER / ENTRY</span>
+                            <code class="text-xs font-bold text-slate-800">index.php</code>
+                        </div>
+                        <button onclick="copySnippet('code-php-index')" class="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 shadow-xs">
+                            <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                            Copy index.php
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-2xl p-4 text-xs font-mono text-slate-200 overflow-x-auto border border-slate-800 relative group">
+                        <pre id="code-php-index" class="leading-relaxed">&lt;?php
+/**
+ * Contoh Pemanggilan Sederhana di index.php
+ */
+require_once __DIR__ . '/controllers/NotificationController.php';
+
+$action = $_GET['action'] ?? 'test';
+
+if ($action === 'send-invoice') {
+    $controller = new NotificationController();
+    $controller->sendInvoiceNotification();
+} else {
+    // Info status endpoint
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'online',
+        'message' => 'WhatsApp Gateway PHP Native Integration Ready!',
+        'test_endpoint' => 'Kirim POST ke: index.php?action=send-invoice',
+        'sample_body' => [
+            'phone' => '081234567890',
+            'customer_name' => 'Budi Santoso',
+            'invoice_no' => 'INV-9921',
+            'total_amount' => 'Rp 250.000'
+        ]
+    ], JSON_PRETTY_PRINT);
+}</pre>
+                    </div>
+                </div>
+
+                <!-- Sub-tab 4: Arsitektur & Panduan -->
+                <div id="php-sub-arch" class="hidden space-y-4">
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                        <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Struktur Folder Aplikasi PHP Anda</h4>
+                        <div class="bg-slate-900 rounded-xl p-4 text-xs font-mono text-emerald-400">
+my-php-project/
+├── models/
+│   └── WhatsAppGateway.php       <-- Model HTTP Client (cURL native)
+├── controllers/
+│   └── NotificationController.php <-- Controller logika pengiriman notifikasi
+└── index.php                     <-- Router / Entry point
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+                            <span class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs mb-2">01</span>
+                            <h5 class="text-xs font-bold text-slate-900">Auto-Fallback Multi-Device</h5>
+                            <p class="text-xs text-slate-500 mt-1">Jika WhatsApp pengirim utama mati/baterai habis, server gateway otomatis memindahkan pengiriman ke nomor cadangan tanpa coding ulang di PHP.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+                            <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs mb-2">02</span>
+                            <h5 class="text-xs font-bold text-slate-900">Validasi Nomor Real-time</h5>
+                            <p class="text-xs text-slate-500 mt-1">Method <code class="text-indigo-600 font-bold">checkNumber()</code> memastikan nomor penerima terdaftar di WA sebelum pesan dikirim untuk efisiensi.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+                            <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs mb-2">03</span>
+                            <h5 class="text-xs font-bold text-slate-900">Format Fleksibel</h5>
+                            <p class="text-xs text-slate-500 mt-1">Nomor tujuan bisa berawalan <code class="font-bold">08...</code>, <code class="font-bold">+62...</code>, maupun <code class="font-bold">628...</code> tanpa perlu konversi manual di PHP.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -327,25 +717,43 @@
     }
 
     function switchDocTab(tab) {
-        const tabs = ['send', 'check', 'devices'];
+        const tabs = ['send', 'check', 'devices', 'php'];
         tabs.forEach(t => {
             const pane = document.getElementById('doc-tab-' + t);
             const btn = document.getElementById('tab-btn-' + t);
+            if (!pane || !btn) return;
             if (t === tab) {
                 pane.classList.remove('hidden');
-                btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs';
+                btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs whitespace-nowrap';
             } else {
                 pane.classList.add('hidden');
-                btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100';
+                btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap';
+            }
+        });
+    }
+
+    function switchPhpSubTab(sub) {
+        const subs = ['model', 'controller', 'index', 'arch'];
+        subs.forEach(s => {
+            const pane = document.getElementById('php-sub-' + s);
+            const btn = document.getElementById('php-btn-' + s);
+            if (!pane || !btn) return;
+            if (s === sub) {
+                pane.classList.remove('hidden');
+                btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-slate-900 text-white shadow-xs flex items-center space-x-1.5 whitespace-nowrap';
+            } else {
+                pane.classList.add('hidden');
+                btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 flex items-center space-x-1.5 whitespace-nowrap';
             }
         });
     }
 
     function copySnippet(elementId) {
         const el = document.getElementById(elementId);
+        if (!el) return;
         const text = el.value || el.innerText;
         navigator.clipboard.writeText(text).then(() => {
-            showToast('Tersalin ke clipboard! Siap di-paste ke Postman.', 'success');
+            showToast('Tersalin ke clipboard!', 'success');
         });
     }
 </script>

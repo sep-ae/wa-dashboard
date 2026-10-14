@@ -125,10 +125,14 @@ app.get('/logs', requireAuth, (req, res) => {
 // API Keys Management View
 app.get('/api-keys', requireAuth, (req, res) => {
     const keys = db.prepare('SELECT * FROM api_keys ORDER BY created_at DESC').all();
+    const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+    const host = req.get('host') || 'localhost:3000';
+    const currentOrigin = `${proto}://${host}`;
     res.render('api_keys', {
         title: 'API Keys - WA Gateway',
         activePage: 'api-keys',
-        keys
+        keys,
+        currentOrigin
     });
 });
 
